@@ -1,0 +1,42 @@
+{
+  "slug": "hidden-markov-models",
+  "summary": "A system hops between hidden states, and you only see readings that each state tends to produce.",
+  "headline": "Infer what you cannot see",
+  "overview": [
+    "A hidden Markov model has three parts: where the chain starts, how likely it is to move from each state to each other state, and how likely each state is to produce each reading. From these you can ask three questions: how likely are these readings, which sequence of states explains them best, and which parameters fit the readings.",
+    "The first is answered by the forward recursion, the second by Viterbi, the third by Baum-Welch, which is expectation-maximisation. Baum-Welch only finds a local best, so where it starts matters. If two states start identical it has no way to pull them apart."
+  ],
+  "widget": "lab-hmm",
+  "break": {
+    "label": "Break it",
+    "explains": "Start both states with identical reading probabilities. Every update treats them the same, so they never separate. The log-likelihood stalls near -294 where the different start reaches about -277, and decoding is no better than always guessing the common state."
+  },
+  "check": {
+    "question": "What does the Viterbi algorithm return?",
+    "options": [
+      "The single most probable sequence of hidden states",
+      "The probability of the readings",
+      "The updated transition probabilities"
+    ],
+    "answer": 0
+  },
+  "realLife": "HMMs were the standard engine of speech recognition for decades, and Rabiner's classic tutorial is about that case. The same machinery labels hidden stages in other sequences.",
+  "data": "300 readings of three kinds produced by a two-state chain that mostly stays where it is (stay chances 0.9 and 0.85). The model learns from the readings alone. The true states are used only to score the decoding. Another seed will give different numbers.",
+  "maths": [
+    "$$\\alpha_t(j)=\\Big[\\sum_i \\alpha_{t-1}(i)\\,a_{ij}\\Big]\\,b_j(o_t)$$",
+    "The forward recursion costs about N squared times T steps instead of listing all N to the power T paths. Viterbi has the same shape with the sum replaced by a maximum. Baum-Welch uses forward and backward passes to count expected transitions and emissions, then renormalises them. The code scales each step to avoid underflow."
+  ],
+  "code": "from hmmlearn.hmm import CategoricalHMM\nm = CategoricalHMM(n_components=2, n_iter=30, random_state=0).fit(obs.reshape(-1, 1))\nstates = m.predict(obs.reshape(-1, 1))      # Viterbi path",
+  "sources": [
+    {
+      "title": "Rabiner (1989): a tutorial on hidden Markov models",
+      "url": "https://doi.org/10.1109/5.18626",
+      "note": "the three problems and their algorithms"
+    },
+    {
+      "title": "Innsbruck IIS: Hidden Markov Models course notes",
+      "url": "https://iis.uibk.ac.at/public/piater/courses/IIS/modules/HMM/HMM.notes.pdf",
+      "note": "forward-backward, Viterbi and Baum-Welch"
+    }
+  ]
+}

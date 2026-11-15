@@ -6,25 +6,25 @@ import { Btn, Row, Slider, Stat } from "./widgets";
 export const S = 380, PAL = ["#58792F", "#C4416B", "#D9A441", "#5B7DB1", "#8A6BB1", "#3E8E8A", "#B5651D", "#7A7F6E"], NOISE = "#B9BDB0";
 export const col = (l: number) => (l < 0 ? NOISE : PAL[l % PAL.length]);
 export const Pick = ({ label, items, value, set }: { label: string; items: string[]; value: string; set: (v: string) => void }) => (
-  <div role="group" aria-label={label} style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{items.map((k) => <button key={k} className="btn" onClick={() => set(k)} aria-pressed={value === k} style={{ minHeight: 44, padding: "0 14px", background: value === k ? "var(--matcha)" : "transparent", color: value === k ? "#fff" : "var(--ink)", borderColor: "var(--line)" }}>{k}</button>)}</div>
+  <div role="group" aria-label={label} className="chips">{items.map((k) => <button key={k} className="px-chip" onClick={() => set(k)} aria-pressed={value === k}>{k}</button>)}</div>
 );
 export const Layout = ({ left, right, note }: { left: React.ReactNode; right: React.ReactNode; note: string }) => (
   <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
     <div className="lab" style={{ display: "grid", gridTemplateColumns: "minmax(0,420px) 1fr", gap: 18, alignItems: "start" }}>{left}<div style={{ display: "flex", flexDirection: "column", gap: 12 }}>{right}</div></div>
-    <p className="mute" style={{ margin: 0, fontSize: 13 }}>{note}</p><style>{`@media(max-width:760px){.lab{grid-template-columns:1fr!important}}`}</style>
+    <p className="mute" style={{ margin: 0, fontSize: 13 }}>{note}</p><style>{`@media(max-width:760px){.lab{grid-template-columns:minmax(0,1fr)!important}}`}</style>
   </div>
 );
 type Dom = [number, number];
 export function Plot({ X, colors, label, dom = [0, 1], rings, children, size = 4.6 }: { X: number[][]; colors: string[]; label: string; dom?: Dom; rings?: boolean[]; children?: React.ReactNode; size?: number }) {
   const p = (v: number) => 6 + ((v - dom[0]) / (dom[1] - dom[0])) * (S - 12);
-  return (<svg viewBox={`0 0 ${S} ${S}`} role="img" aria-label={label} style={{ width: "100%", height: "auto", background: "#fff", borderRadius: 14, border: "1px solid var(--line)" }}>
+  return (<svg viewBox={`0 0 ${S} ${S}`} role="img" aria-label={label} style={{ width: "100%", height: "auto", background: "var(--screen)", borderRadius: 0, border: "3px solid var(--ink)" }}>
     {children}{X.map((q, i) => <circle key={i} cx={p(q[0])} cy={S - p(q[1])} r={size} fill={colors[i]} stroke={rings?.[i] ? "#26301F" : "#fff"} strokeWidth={rings?.[i] ? 2.2 : 1} opacity={0.92} />)}</svg>);
 }
 export const Mini = ({ series, hi, w = 300, h = 110, label }: { series: { v: number[]; c: string; n: string }[]; hi: number; w?: number; h?: number; label: string }) => {
   const all = series.flatMap((s) => s.v), lo = Math.min(...all), up = Math.max(...all), n = series[0].v.length, x = (i: number) => 14 + (i / (n - 1)) * (w - 28), y = (v: number) => h - 14 - ((v - lo) / (up - lo || 1)) * (h - 28);
   return (<svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={label} style={{ width: "100%", maxWidth: 360, height: "auto" }}>
     {series.map((s) => <g key={s.n}><polyline fill="none" stroke={s.c} strokeWidth={2} points={s.v.map((v, i) => `${x(i)},${y(v)}`).join(" ")} /><circle cx={x(hi)} cy={y(s.v[hi])} r={5} fill={s.c} /></g>)}
-    {series.map((s, i) => <text key={s.n} x={14 + i * 110} y={10} fontSize={11} fill={s.c} fontWeight={700}>{s.n}</text>)}
+    {series.map((s, i) => <text key={s.n} x={14 + i * Math.min(110, (w - 28) / series.length)} y={10} fontSize={11} fill={s.c} fontWeight={700}>{s.n}</text>)}
   </svg>);
 };
 
@@ -73,7 +73,7 @@ function PcaLab() {
   const rec = keep1 ? D.map((q) => nrm(p.reconstruct(q, 1))) : null;
   const err = keep1 ? D.reduce((s, q) => s + p.reconstruct(q, 1).reduce((t, v, j) => t + (v - q[j]) ** 2, 0), 0) / D.length : 0, tot = p.values[0] + p.values[1];
   return <Layout note="Both axes use the same scale. Raise the units and the cloud flattens into a line, which is exactly what PCA sees. The thick arrow is the first principal component."
-    left={<svg viewBox={`0 0 ${S} ${S}`} role="img" aria-label="Two-feature data with principal component arrows" style={{ width: "100%", height: "auto", background: "#fff", borderRadius: 14, border: "1px solid var(--line)" }}>
+    left={<svg viewBox={`0 0 ${S} ${S}`} role="img" aria-label="Two-feature data with principal component arrows" style={{ width: "100%", height: "auto", background: "var(--screen)", borderRadius: 0, border: "3px solid var(--ink)" }}>
       {rec && P.map((q, i) => <line key={i} x1={px(q[0])} y1={py(q[1])} x2={px(rec[i][0])} y2={py(rec[i][1])} stroke="#F1C5CD" strokeWidth={1.5} />)}
       {P.map((q, i) => <circle key={i} cx={px(q[0])} cy={py(q[1])} r={4} fill="#58792F" opacity={0.8} />)}{rec && rec.map((q, i) => <circle key={`r${i}`} cx={px(q[0])} cy={py(q[1])} r={2.6} fill="#C4416B" />)}
       {arrow(1, "#D9A441")}{arrow(0, "#C4416B")}</svg>}

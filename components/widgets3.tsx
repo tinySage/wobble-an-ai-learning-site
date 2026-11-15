@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { averagePrecision, brier, confusion, ece, fitLogistic, fitPolynomial, kFold, mse, precisionRecallF1, reliability, rng, rocAuc, rocCurve, trainTestSplit, truth } from "@/lib/ml";
 import { Axes, Btn, C, H, PAD, Row, Slider, Stat, W, sx, sy } from "./widgets";
 
-const box = { width: "100%", height: "auto", background: "#fff", borderRadius: 14, border: "1px solid var(--line)" } as const;
+const box = { width: "100%", height: "auto", background: "var(--screen)", borderRadius: 0, border: "3px solid var(--ink)" } as const;
 const col = { width: "100%", display: "flex", flexDirection: "column", gap: 14 } as const;
 const gauss = (r: () => number) => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
 const pct = (v: number) => `${(v * 100).toFixed(1)}%`;

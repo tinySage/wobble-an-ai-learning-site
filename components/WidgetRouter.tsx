@@ -4,7 +4,9 @@ import { PART3, Widget3 } from "./widgets3";
 import { PART2, Widget2 } from "./widgets2";
 import { PART4, Widget4 } from "./widgets4";
 import { PART5, Widget5 } from "./widgets5";
+import { PART6, Widget6 } from "./widgets6";
 export default function WidgetRouter({ name }: { name: string }) {
+  if (PART6.includes(name)) return <Widget6 name={name} />;
   if (PART5.includes(name)) return <Widget5 name={name} />;
   if (PART4.includes(name)) return <Widget4 name={name} />;
   if (PART2.includes(name)) return <Widget2 name={name} />;

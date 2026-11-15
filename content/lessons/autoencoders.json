@@ -1,0 +1,47 @@
+{
+  "slug": "autoencoders",
+  "summary": "Squeeze data through a narrow code and rebuild it. What survives the squeeze is what mattered.",
+  "headline": "Compress, then rebuild",
+  "overview": [
+    "An autoencoder has an encoder that turns each input into a short code and a decoder that rebuilds the input from the code. It trains on the rebuild error. With a linear encoder and decoder and squared error it finds the same subspace as PCA, though its weights need not be orthogonal. With curved layers it can follow a curve that a straight line cannot.",
+    "The narrow code is what forces learning. If the code is as big as the input, the network can simply copy. Overcomplete autoencoders need another constraint such as denoising or sparsity."
+  ],
+  "widget": "lab-autoencoder",
+  "break": {
+    "label": "Break it",
+    "explains": "Make the code as big as the input: two numbers for two. The rebuild becomes almost perfect because the network can copy, but nothing was compressed and nothing was learned about the data."
+  },
+  "check": {
+    "question": "What does a one-number linear autoencoder find?",
+    "options": [
+      "The same line PCA finds",
+      "A curve through the data",
+      "Nothing, because linear networks cannot learn"
+    ],
+    "answer": 0
+  },
+  "realLife": "Autoencoders compress images and sensor readings, and they flag unusual data: a point that rebuilds badly does not look like the training data.",
+  "data": "100 noisy points along a half circle. The linear option is a two-layer linear network. The nonlinear option is a 2-10-code-10-2 network with tanh. Both train on squared rebuild error with Adam. Results depend on the random start.",
+  "maths": [
+    "$$\\min_{E,D}\\ \\frac1n\\sum_i\\lVert x_i-D(E(x_i))\\rVert^2$$",
+    "For the linear case the best rank-k rebuild error equals the variance in the directions PCA discards. The widget compares the network's error with that bound for a one-number code."
+  ],
+  "code": "import torch.nn as nn\nenc = nn.Sequential(nn.Linear(2, 10), nn.Tanh(), nn.Linear(10, 1))\ndec = nn.Sequential(nn.Linear(1, 10), nn.Tanh(), nn.Linear(10, 2))\nloss = ((dec(enc(x)) - x) ** 2).mean()",
+  "sources": [
+    {
+      "title": "Baldi and Hornik (1989): neural networks and PCA",
+      "url": "https://doi.org/10.1016/0893-6080(89)90014-2",
+      "note": "linear autoencoders learn the principal subspace"
+    },
+    {
+      "title": "Goodfellow, Bengio and Courville: autoencoders",
+      "url": "https://www.deeplearningbook.org/contents/autoencoders.html",
+      "note": "undercomplete, overcomplete and regularised autoencoders"
+    },
+    {
+      "title": "Ghojogh and Crowley: unsupervised and supervised PCA tutorial",
+      "url": "https://arxiv.org/abs/1906.03148",
+      "note": "PCA as a linear autoencoder"
+    }
+  ]
+}
