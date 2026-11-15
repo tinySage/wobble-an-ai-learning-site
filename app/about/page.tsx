@@ -12,7 +12,8 @@ export default function About() {
         <p>Each lesson is checked against several trusted sources before it is written: library documentation, textbooks, course notes and the original papers. When they disagree, the Sources tab says so.</p>
         <p>The models are written from scratch in TypeScript so they run in your browser, and tests check them against scikit-learn, NumPy and SciPy. The datasets are small and made up so each lesson stays fast. Numbers will shift on real data: use the lessons for intuition, then test on your own problem.</p>
         <h2>Who made it</h2>
-        <p>Wobble was designed and built by Momo (<a href="https://github.com/tinySage">tinySage</a>), a computer science grad student. Open source under the MIT licence at <a href="https://github.com/tinySage/wobble-an-ai-learning-site">github.com/tinySage/wobble-an-ai-learning-site</a>.</p>
+        <p>Wobble was designed and built by Muktanan Mohapatra (Momo), a computer science grad student. Questions, corrections or ideas are welcome at <a href="mailto:muktamohapatra672@gmail.com">muktamohapatra672@gmail.com</a>, or on GitHub at <a href="https://github.com/tinySage">github.com/tinySage</a>.</p>
+        <p>The code is open source under the MIT licence: <a href="https://github.com/tinySage/wobble-an-ai-learning-site">github.com/tinySage/wobble-an-ai-learning-site</a>. © 2026 Muktanan Mohapatra.</p>
       </article>
     </Shell>
   );

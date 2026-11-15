@@ -37,7 +37,7 @@ function Lab({ cfg }: { cfg: Cfg }) {
           <Btn onClick={() => { setKind(cfg.init.kind); setNoise(cfg.init.noise); setP(cfg.init.p); }}>Reset</Btn></Row>
       </div></div>
     <p className="mute" style={{ margin: 0, fontSize: 13 }}>Filled dots trained the model. Rings were held back for testing. Green and rose regions show which class it predicts, deeper colour means more sure.</p>
-    <style>{`@media(max-width:760px){.lab{grid-template-columns:1fr!important}}`}</style>
+    <style>{`@media(max-width:760px){.lab{grid-template-columns:minmax(0,1fr)!important}}`}</style>
   </div>);
 }
 

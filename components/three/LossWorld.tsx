@@ -69,7 +69,7 @@ function Terrain() {
 /* ---------- the ball doing gradient descent ---------- */
 export type Anchors = Record<string, THREE.Vector3>;
 const START = [-2.45, 2.25];
-function Descent({ lr, running, seed, anchors, onStep }: { lr: number; running: boolean; seed: number; anchors: React.MutableRefObject<Anchors>; onStep: (s: { step: number; loss: number; state: "rolling" | "settled" | "flew off" }) => void }) {
+function Descent({ lr, running, seed, anchors, onStep }: { lr: number; running: boolean; seed: number; anchors: React.MutableRefObject<Anchors>; onStep: (s: { step: number; loss: number; state: string }) => void }) {
   const ball = useRef<THREE.Mesh>(null), arrow = useRef<THREE.Group>(null), trail = useRef<THREE.BufferGeometry>(null);
   const st = useRef({ x: START[0], z: START[1], y: 0, vy: 0, falling: false, step: 0, acc: 0, path: [] as number[], done: false });
   useEffect(() => { st.current = { x: START[0], z: START[1], y: H(START[0], START[1]), vy: 0, falling: false, step: 0, acc: 0, path: [], done: false }; }, [seed, lr]);
@@ -83,7 +83,8 @@ function Descent({ lr, running, seed, anchors, onStep }: { lr: number; running: 
         s.path.push(s.x, H(Math.max(-R, Math.min(R, s.x)), Math.max(-R, Math.min(R, s.z))) + 0.03, s.z);
         if (Math.abs(s.x) > R || Math.abs(s.z) > R) { s.falling = true; s.y = H(Math.max(-R, Math.min(R, s.x)), Math.max(-R, Math.min(R, s.z))) + 0.4; s.vy = 2; }
         const l = loss(s.x, s.z), moved = Math.hypot(gx, gz) * lr;
-        const state = s.falling ? "flew off" : moved < 2e-3 || s.step > 160 ? "settled" : "rolling";
+        const state = s.falling ? "flew off" : moved < 2e-3 ? "settled" : s.step > 160 ? "never settled" : moved > 0.25 ? "bouncing" : "rolling";
+        if (state === "never settled") s.done = true;
         if (state === "settled") s.done = true;
         onStep({ step: s.step, loss: l, state });
       }

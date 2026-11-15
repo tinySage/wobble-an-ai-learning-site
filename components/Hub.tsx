@@ -9,7 +9,7 @@ const TABS = ["Overview", "How it works", "Worlds"] as const;
 
 export default function Hub({ worlds, first }: { worlds: { id: number; title: string; blurb: string; n: number; first: string }[]; first: string }) {
   const [lrText, setLrText] = useState("0.12"), [lr, setLr] = useState(0.12), [running, setRunning] = useState(true), [seed, setSeed] = useState(0), [st, setSt] = useState({ step: 0, loss: 0, state: "rolling" }), [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
-  const run = (v = lrText) => { const n = Math.max(0.01, Math.min(2, parseFloat(v) || 0.12)); setLrText(String(n)); setLr(n); setSeed((s) => s + 1); setRunning(true); };
+  const run = (v = lrText) => { const n = Math.max(0.01, Math.min(6, parseFloat(v) || 0.12)); setLrText(String(n)); setLr(n); setSeed((s) => s + 1); setRunning(true); };
   const broke = st.state === "flew off";
   return (<div className="hub">
     <LossWorld lr={lr} running={running} seed={seed} setRunning={setRunning} onStatus={setSt} />
@@ -29,9 +29,9 @@ export default function Hub({ worlds, first }: { worlds: { id: number; title: st
       </div>
       <div className="card code-card">
         <div className="code-head"><b>Try it yourself</b><div className="code-btns"><button className="ibtn" onClick={() => { setSeed((s) => s + 1); setRunning(true); }} aria-label="Restart"><Ic.Rotl size={18} /></button><button className="ibtn run" onClick={() => run()} aria-label="Run with this learning rate"><Ic.Run size={16} /></button></div></div>
-        <pre className="code"><span className="ln">1</span><span className="k">import</span> numpy <span className="k">as</span> np{"\n"}<span className="ln">2</span>{"\n"}<span className="ln">3</span>lr = <input aria-label="Learning rate" className="code-in" value={lrText} onChange={(e) => setLrText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && run()} />  <span className="c"># try 0.05, then 1.1</span>{"\n"}<span className="ln">4</span>w = np.array([-2.45, 2.25]){"\n"}<span className="ln">5</span><span className="k">for</span> step <span className="k">in</span> range(<span className="n">160</span>):{"\n"}<span className="ln">6</span>    w = w - lr * <span className="f">grad</span>(w){"\n"}</pre>
+        <pre className="code"><span className="ln">1</span><span className="k">import</span> numpy <span className="k">as</span> np{"\n"}<span className="ln">2</span>{"\n"}<span className="ln">3</span>lr = <input aria-label="Learning rate" className="code-in" value={lrText} onChange={(e) => setLrText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && run()} />  <span className="c"># try 1.2, then 4.5</span>{"\n"}<span className="ln">4</span>w = np.array([-2.45, 2.25]){"\n"}<span className="ln">5</span><span className="k">for</span> step <span className="k">in</span> range(<span className="n">160</span>):{"\n"}<span className="ln">6</span>    w = w - lr * <span className="f">grad</span>(w){"\n"}</pre>
         <div className={`code-out ${broke ? "bad" : ""}`} aria-live="polite"><span>step {st.step}</span><span>loss {Number.isFinite(st.loss) ? st.loss.toFixed(3) : "∞"}</span><span className="state">{broke ? "flew off the map" : st.state}</span></div>
-        <div className="code-actions"><button className="btn break" onClick={() => { setLrText("1.1"); run("1.1"); }}>Break it: lr = 1.1</button><button className="btn" onClick={() => { setLrText("0.12"); run("0.12"); }}>Fix it</button><Link href={`/lessons/${first}/`} className="btn primary">Start lesson 1 <Ic.Chevron size={16} /></Link></div>
+        <div className="code-actions"><button className="btn break" onClick={() => { setLrText("4.5"); run("4.5"); }}>Break it: lr = 4.5</button><button className="btn" onClick={() => { setLrText("0.12"); run("0.12"); }}>Fix it</button><Link href={`/lessons/${first}/`} className="btn primary">Start lesson 1 <Ic.Chevron size={16} /></Link></div>
       </div>
     </aside>
   </div>);

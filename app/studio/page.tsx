@@ -1,4 +1,5 @@
 "use client";
+// noindex: this route only exists for scripts/make_thumbs.py
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 

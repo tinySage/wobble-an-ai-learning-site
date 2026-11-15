@@ -29,3 +29,5 @@ export const Brain = (p: { size?: number }) => <I {...p} d="M9 4a3 3 0 0 0-3 3 3
 export const Shield = (p: { size?: number }) => <I {...p} d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6zM9 12l2 2 4-4" />;
 export const Code = (p: { size?: number }) => <I {...p} d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14" />;
 export const Run = (p: { size?: number }) => <svg viewBox="0 0 24 24" width={p.size ?? 22} height={p.size ?? 22} aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor" /></svg>;
+export const Mail = (p: { size?: number }) => <I {...p}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3.5 6.5 8.5 6.5 8.5-6.5" /></I>;
+export const Cube = (p: { size?: number }) => <I {...p} d="m12 3 8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12 4 7.5" />;

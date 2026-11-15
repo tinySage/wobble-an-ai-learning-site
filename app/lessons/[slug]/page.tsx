@@ -5,6 +5,8 @@ import LessonBody from "@/components/LessonBody";
 import Shell from "@/components/shell/Shell";
 import LessonStrip from "@/components/shell/LessonStrip";
 import * as Ic from "@/components/shell/Icons";
+import Lesson3D from "@/components/three/Lesson3D";
+import { HAS_3D } from "@/content/has3d";
 import { PARTS, isLive, lessonMeta, liveSlugs, loadLesson } from "@/lib/lessons";
 
 export const dynamicParams = false;
@@ -38,6 +40,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
         </section>
         <LessonBody c={c} />
       </div>
+      {HAS_3D.includes(slug) && <Lesson3D slug={slug} />}
       <nav className="pager" aria-label="Previous and next lesson">
         {m.prev && isLive(m.prev.slug) ? <Link href={`/lessons/${m.prev.slug}/`} className="btn">← {m.prev.title}</Link> : <Link href="/lessons/" className="btn">← Map</Link>}
         {next && isLive(next.slug) ? <Link href={`/lessons/${next.slug}/`} className="btn primary">{m.next ? "Next" : `World ${part.id + 1}`}: {next.title} →</Link> : <Link href="/lessons/" className="btn primary">All done · back to the map</Link>}

@@ -38,7 +38,13 @@ export default function Shell({ current, children, progress }: { current?: strin
         <div className="top-right"><ProgressCard label={progress.label} slugs={progress.slugs} /><Clock /></div>
       </header>
       <main id="main" tabIndex={-1}>{children}</main>
-      <footer className="foot"><span>Wobble · learn machine learning by breaking it</span><span>Built by Momo (<a href="https://github.com/tinySage">tinySage</a>) · MIT · runs in your browser, no accounts</span></footer>
+      <footer className="foot">
+        <div className="foot-l"><b>© 2026 Muktanan Mohapatra (Momo)</b><span>Wobble · learn machine learning by breaking it · MIT licence</span></div>
+        <div className="foot-r">
+          <a href="mailto:muktamohapatra672@gmail.com"><Ic.Mail size={18} />muktamohapatra672@gmail.com</a>
+          <a href="https://github.com/tinySage"><Ic.Git size={18} />github.com/tinySage</a>
+        </div>
+      </footer>
     </div>
   </div>);
 }

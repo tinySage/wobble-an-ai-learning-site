@@ -129,7 +129,7 @@ main:focus{outline:none}
 .code-out .state{margin-left:auto;text-transform:uppercase;letter-spacing:.06em}
 .code-out.bad{background:var(--rose-d);color:#fff}
 .code-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-@media(max-width:1180px){.hub{grid-template-columns:1fr}}
+@media(max-width:1180px){.hub{grid-template-columns:minmax(0,1fr)}}
 
 /* lesson strip */
 .strip{margin-top:26px}
@@ -156,11 +156,17 @@ main:focus{outline:none}
 @media(max-width:760px){.strip-next{display:none}.lcard{width:270px}}
 
 .foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:40px;padding:18px 0 26px;border-top:1.5px solid var(--line2);font:600 12.5px var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
-.foot a{text-decoration:underline}
+.foot{align-items:center}.foot-l{display:flex;flex-direction:column;gap:4px}.foot-l b{font-size:15px;color:var(--ink)}
+.foot-r{display:flex;gap:18px;flex-wrap:wrap}.foot-r a{display:inline-flex;align-items:center;gap:8px;text-transform:none;letter-spacing:.04em;font:500 15px var(--sans);color:var(--ink2)}.foot-r a:hover{color:var(--rose-d)}
+.lesson3d{margin-top:22px;padding:18px 20px}.lesson3d .stage3d{height:520px}.l3-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.l3-head b{font:600 19px var(--cond);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.l3-out{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+.nf{max-width:640px;padding:40px 0}.nf h1{font-size:64px;letter-spacing:.1em}.nf p{color:var(--ink2)}
 
 /* ---------- lesson page ---------- */
 .lesson{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:22px;align-items:start}
-@media(max-width:1180px){.lesson{grid-template-columns:1fr}}
+@media(max-width:1180px){.lesson{grid-template-columns:minmax(0,1fr)}}
+.play{min-width:0;overflow:hidden}.play svg{max-width:100%;overflow:hidden}
+@media(max-width:760px){.play-head span{display:none}}.panel{min-width:0}
 .lhead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
 .lhead h1{font-size:clamp(34px,4.4vw,52px);letter-spacing:.08em}
 .lhead p{margin:6px 0 0;max-width:640px;color:var(--ink2)}
@@ -169,6 +175,7 @@ main:focus{outline:none}
 .verb{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1.5px solid var(--ink);border-radius:999px;font:600 13px var(--cond);letter-spacing:.14em;text-transform:uppercase}
 .verb i{width:8px;height:8px;border-radius:50%;background:var(--rose)}
 .play{padding:20px;border-radius:16px}
+@media(max-width:760px){.play{padding:12px}.lesson3d .stage3d{height:420px}}
 .play-head{display:flex;align-items:center;justify-content:space-between;margin:-4px 0 14px;font:600 13px var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
 .play-head b{color:var(--ink);font-size:15px}
 .breakbox{display:flex;gap:14px;align-items:flex-start;margin-top:16px;padding:14px 16px;border-radius:var(--r);border:1.5px solid var(--rose);background:#FDEEF1}
@@ -221,3 +228,4 @@ main:focus{outline:none}
 .lhead-r{display:flex;align-items:center;gap:14px}
 .lhead-r img{width:150px;height:auto}
 @media(max-width:760px){.lhead-r img{display:none}}
+.pager .btn{white-space:normal;text-align:center;max-width:100%;line-height:1.25;padding-top:8px;padding-bottom:8px}

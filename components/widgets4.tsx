@@ -11,7 +11,7 @@ export const Pick = ({ label, items, value, set }: { label: string; items: strin
 export const Layout = ({ left, right, note }: { left: React.ReactNode; right: React.ReactNode; note: string }) => (
   <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
     <div className="lab" style={{ display: "grid", gridTemplateColumns: "minmax(0,420px) 1fr", gap: 18, alignItems: "start" }}>{left}<div style={{ display: "flex", flexDirection: "column", gap: 12 }}>{right}</div></div>
-    <p className="mute" style={{ margin: 0, fontSize: 13 }}>{note}</p><style>{`@media(max-width:760px){.lab{grid-template-columns:1fr!important}}`}</style>
+    <p className="mute" style={{ margin: 0, fontSize: 13 }}>{note}</p><style>{`@media(max-width:760px){.lab{grid-template-columns:minmax(0,1fr)!important}}`}</style>
   </div>
 );
 type Dom = [number, number];
