@@ -5,3 +5,4 @@ export * from "./scale.ts";
 export * from "./split.ts";
 export * from "./metrics.ts";
 export * from "./logistic.ts";
+export * from "./biasvar.ts";
