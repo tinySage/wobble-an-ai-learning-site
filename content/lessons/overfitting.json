@@ -3,15 +3,46 @@
   "summary": "A model with enough freedom can pass through every training point. Then it meets data it has not seen.",
   "headline": "A model that memorises",
   "overview": [
-    "A curve with enough freedom can pass through every training dot. Training error drops to almost nothing.",
-    "Then you show it points it has never seen. The error there tells you what the model really learned."
+    "A curve with enough freedom can pass close to every training dot. Training error falls and falls.",
+    "Then you show it points it has never seen. That score is the one that counts."
   ],
   "widget": "overfit-curve",
-  "break": { "label": "Break it", "explains": "Training error falls while test error jumps. Only the score on unseen data is worth trusting." },
+  "break": {
+    "label": "Break it",
+    "explains": "Press the button to add freedom one degree at a time. Training error keeps dropping while the error on unseen points turns around and climbs."
+  },
   "check": {
     "question": "Training error keeps falling as you add model freedom. Test error rises. What is happening?",
-    "options": ["The model is learning more", "The model is memorising noise", "The data is wrong"],
+    "options": [
+      "The model is learning more",
+      "The model is memorising noise",
+      "The data is wrong"
+    ],
     "answer": 1
   },
-  "realLife": "Fraud models that look perfect on last year's data and fail on this month's are often overfit."
+  "realLife": "Fraud models that look perfect on last year's data and fail on this month's are often overfit.",
+  "data": "Fourteen training points and sixty held-out test points, all from one sine wave with noise. Results depend heavily on this small sample, so another draw would put the turning point elsewhere. Degrees stop at 9 to keep the log-scale chart readable.",
+  "maths": [
+    "training error = mean (ŷ − y)² on the points used to fit",
+    "test error = the same, on points the fit never saw",
+    "Gap between them grows as the number of free weights approaches the number of points."
+  ],
+  "code": "for d in range(1, 10):\n    m = make_pipeline(PolynomialFeatures(d), LinearRegression()).fit(Xtr, ytr)\n    print(d, mse(ytr, m.predict(Xtr)), mse(yte, m.predict(Xte)))",
+  "sources": [
+    {
+      "title": "MLU-Explain: the bias-variance tradeoff",
+      "url": "https://mlu-explain.github.io/bias-variance",
+      "note": "under- and over-fitting interactively"
+    },
+    {
+      "title": "Google ML Crash Course: overfitting",
+      "url": "https://developers.google.com/machine-learning/crash-course/overfitting/overfitting",
+      "note": "generalisation and held-out data"
+    },
+    {
+      "title": "Kanaries sklearn guide",
+      "url": "https://docs.kanaries.net/topics/Scikit-Learn/sklearn-linear-regression",
+      "note": "high-degree polynomials overfit quickly"
+    }
+  ]
 }

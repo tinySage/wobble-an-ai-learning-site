@@ -1,0 +1,48 @@
+{
+  "slug": "polynomial-features",
+  "summary": "A straight-line model can draw curves if you hand it x², x³ and so on.",
+  "headline": "Curves from a line-fitting machine",
+  "overview": [
+    "Add the square and the cube of x as extra columns. The model is still linear in its weights, but the curve it draws can bend.",
+    "Higher degrees bend more. Play through them and watch what changes."
+  ],
+  "widget": "poly",
+  "break": {
+    "label": "Break it",
+    "explains": "Slide the degree to 9 on only 14 points. The curve starts chasing individual dots."
+  },
+  "check": {
+    "question": "Why is polynomial regression still called linear regression?",
+    "options": [
+      "The curve is a straight line",
+      "It is linear in the weights",
+      "It only works on two points"
+    ],
+    "answer": 1
+  },
+  "realLife": "Spline and basis-function models in analytics tools are this same idea with smarter columns.",
+  "data": "Fourteen training points from a sine wave plus noise. The dashed line is the true pattern, which a real project would not know.",
+  "maths": [
+    "ŷ = w₀ + w₁x + w₂x² + … + w_d x^d",
+    "Build columns x, x², …, x^d, then run ordinary least squares.",
+    "Here x is mapped to [−1, 1] first, because raw powers are badly scaled."
+  ],
+  "code": "from sklearn.preprocessing import PolynomialFeatures\nm = make_pipeline(PolynomialFeatures(5), StandardScaler(), LinearRegression())",
+  "sources": [
+    {
+      "title": "scikit-learn: polynomial regression (linear models page)",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "note": "basis functions inside a linear model"
+    },
+    {
+      "title": "Kanaries sklearn guide",
+      "url": "https://docs.kanaries.net/topics/Scikit-Learn/sklearn-linear-regression",
+      "note": "high degrees overfit fast; use cross-validation"
+    },
+    {
+      "title": "CS229 lecture notes",
+      "url": "https://cs229.stanford.edu/main_notes.pdf",
+      "note": "features and bias-variance"
+    }
+  ]
+}

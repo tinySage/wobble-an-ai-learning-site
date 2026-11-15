@@ -98,3 +98,14 @@ test("bias falls and variance rises as the model gets more flexible", () => {
   assert.ok(d3.total < d1.total && d3.total < d8.total, "the cubic should have the lowest total error of the three");
   close(d3.total, d3.bias2 + d3.variance + d3.noise2, 1e-12, "decomposition adds up");
 });
+
+test("lambdaMax is the true stability limit, on raw and on standardised features", () => {
+  const r = rng(21), raw = Array.from({ length: 30 }, () => [r(), r() * 300]), y = raw.map((v) => 2 * v[0] + 0.01 * v[1] + 1 + (r() - 0.5) * 0.2);
+  const mu = [0, 1].map((j) => raw.reduce((a, v) => a + v[j], 0) / 30), sd = [0, 1].map((j) => Math.sqrt(raw.reduce((a, v) => a + (v[j] - mu[j]) ** 2, 0) / 30));
+  const std = raw.map((v) => v.map((t, j) => (t - mu[j]) / sd[j]));
+  for (const X of [raw, std]) {
+    const lim = 2 / lambdaMax(X), ok = gradientDescentMulti(X, y, 0.98 * lim, 400).losses, bad = gradientDescentMulti(X, y, 1.02 * lim, 400).losses;
+    assert.ok(ok[399] < ok[0], "just under the limit the loss falls");
+    assert.ok(bad[bad.length - 1] > bad[0] * 10, "just over the limit the loss grows");
+  }
+});

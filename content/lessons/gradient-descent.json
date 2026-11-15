@@ -1,0 +1,48 @@
+{
+  "slug": "gradient-descent",
+  "summary": "Reach the best line by taking small downhill steps instead of solving for it.",
+  "headline": "Walk downhill until the ground flattens",
+  "overview": [
+    "Start with a bad line. Work out which way is downhill for the slope and the intercept. Take a small step that way and repeat.",
+    "For a straight line there is a direct answer, so this is practice for models that have none."
+  ],
+  "widget": "descent",
+  "break": {
+    "label": "Break it",
+    "explains": "Raise the learning rate to the top of the slider and press Run. The line swings further off each step."
+  },
+  "check": {
+    "question": "What does the learning rate control?",
+    "options": [
+      "How many data points are used",
+      "How big each downhill step is",
+      "Which loss function is minimised"
+    ],
+    "answer": 1
+  },
+  "realLife": "Neural networks have no closed-form answer, so every one of them is trained this way, usually on small batches.",
+  "data": "Sixteen points around a rising line, with x between 0 and 1. The run stops after 80 steps.",
+  "maths": [
+    "update   w ← w − η · ∂L/∂w     b ← b − η · ∂L/∂b",
+    "for MSE  ∂L/∂w = (2/n) Σ (ŷᵢ − yᵢ) xᵢ     ∂L/∂b = (2/n) Σ (ŷᵢ − yᵢ)",
+    "η is the learning rate."
+  ],
+  "code": "w, b = 0.0, 0.0\nfor _ in range(80):\n    e = w*x + b - y\n    w -= lr * 2*np.mean(e*x)\n    b -= lr * 2*np.mean(e)",
+  "sources": [
+    {
+      "title": "CS229 lecture notes",
+      "url": "https://cs229.stanford.edu/main_notes.pdf",
+      "note": "LMS rule and batch descent; note CS229 writes the loss with a ½ factor, so its η is scaled differently"
+    },
+    {
+      "title": "Google ML Crash Course: gradient descent exercise",
+      "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent-exercise",
+      "note": "learning-rate experiments on fuel-efficiency data"
+    },
+    {
+      "title": "Stanford CS229 lecture 2 transcript",
+      "url": "https://see.stanford.edu/materials/aimlcs229/transcripts/MachineLearning-Lecture02.html",
+      "note": "batch vs stochastic descent"
+    }
+  ]
+}

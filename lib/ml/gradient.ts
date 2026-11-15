@@ -38,15 +38,20 @@ export function gradientDescentMulti(X: number[][], y: number[], lr: number, ste
 
 /** Largest curvature of the mean-squared-error surface. Gradient descent is stable only below lr = 2 / lambdaMax. */
 export function lambdaMax(X: number[][]): number {
-  const n = X.length, p = X[0].length + 1;
-  const Z = X.map((r) => [...r, 1]), H = Array.from({ length: p }, (_, a) => Array.from({ length: p }, (_, b) => (2 / n) * Z.reduce((s, r) => s + r[a] * r[b], 0)));
-  let v = new Array(p).fill(1 / Math.sqrt(p)), lam = 0;
-  for (let it = 0; it < 2000; it++) {
-    const u = H.map((row) => row.reduce((s, h, j) => s + h * v[j], 0)), nu = Math.sqrt(u.reduce((s, t) => s + t * t, 0));
-    if (nu === 0) return 0;
-    v = u.map((t) => t / nu); if (Math.abs(nu - lam) < 1e-13 * nu) { lam = nu; break; } lam = nu;
+  const n = X.length, p = X[0].length + 1, Z = X.map((r) => [...r, 1]);
+  const A = Array.from({ length: p }, (_, a) => Array.from({ length: p }, (_, b) => (2 / n) * Z.reduce((s, r) => s + r[a] * r[b], 0)));
+  // Jacobi rotations: exact for the small symmetric matrices used here, unlike power iteration when eigenvalues are close.
+  for (let sweep = 0; sweep < 100; sweep++) {
+    let off = 0; for (let i = 0; i < p; i++) for (let j = i + 1; j < p; j++) off += A[i][j] ** 2;
+    if (off < 1e-24) break;
+    for (let i = 0; i < p; i++) for (let j = i + 1; j < p; j++) {
+      if (Math.abs(A[i][j]) < 1e-300) continue;
+      const th = (A[j][j] - A[i][i]) / (2 * A[i][j]), t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1)), c = 1 / Math.sqrt(t * t + 1), sn = t * c;
+      for (let k = 0; k < p; k++) { const x = A[k][i], y = A[k][j]; A[k][i] = c * x - sn * y; A[k][j] = sn * x + c * y; }
+      for (let k = 0; k < p; k++) { const x = A[i][k], y = A[j][k]; A[i][k] = c * x - sn * y; A[j][k] = sn * x + c * y; }
+    }
   }
-  return lam;
+  return Math.max(...A.map((r, i) => r[i]));
 }
 
 /** First step at which the loss is within `tol` (relative) of the final optimum, or null if it never gets there. */

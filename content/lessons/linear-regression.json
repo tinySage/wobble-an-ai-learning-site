@@ -1,0 +1,49 @@
+{
+  "slug": "linear-regression",
+  "summary": "Fit the straight line that makes the squared errors as small as possible.",
+  "headline": "The line with the smallest squared misses",
+  "overview": [
+    "Pick a line. Measure how far each dot sits above or below it. Square those misses and average them. The best line is the one with the smallest average.",
+    "Squaring means one far-off dot pulls hard on the line. That is the thing to watch when you break it."
+  ],
+  "widget": "linear-fit",
+  "break": {
+    "label": "Break it",
+    "explains": "Add an outlier far below the pattern. The whole line tilts toward it, because a miss of 2 costs four times a miss of 1."
+  },
+  "check": {
+    "question": "Why does one outlier move the fitted line so much?",
+    "options": [
+      "Squared errors punish big misses heavily",
+      "Lines cannot ignore any point",
+      "The slope is always recomputed from the last point"
+    ],
+    "answer": 0
+  },
+  "realLife": "House-price models are often fit on log prices partly so a few mansions do not drag the line.",
+  "data": "Ten points that follow a gentle upward trend with a little noise. Click the plot to add more. Nothing is hidden: the same points feed the fit you see.",
+  "maths": [
+    "prediction   ŷ = w·x + b",
+    "loss         MSE = (1/n) Σ (ŷᵢ − yᵢ)²",
+    "best w, b    solve the normal equations XᵀX θ = Xᵀy",
+    "In practice the solver uses a QR factorisation instead of inverting XᵀX, which is steadier numerically."
+  ],
+  "code": "from sklearn.linear_model import LinearRegression\nm = LinearRegression().fit(X, y)\nprint(m.coef_, m.intercept_)",
+  "sources": [
+    {
+      "title": "CS229 lecture notes (Ma and Ng)",
+      "url": "https://cs229.stanford.edu/main_notes.pdf",
+      "note": "least squares, normal equations, probabilistic view"
+    },
+    {
+      "title": "scikit-learn: linear models",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "note": "OLS as the same least-squares objective"
+    },
+    {
+      "title": "Google ML Crash Course: linear regression",
+      "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent-exercise",
+      "note": "same loss, framed as weight and bias"
+    }
+  ]
+}
