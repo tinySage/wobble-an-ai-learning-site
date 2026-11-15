@@ -8,6 +8,7 @@ import { kFold, trainTestSplit, timeSplit, walkForward, rng } from "../lib/ml/sp
 import { rocAuc, precisionRecallF1, confusion, rocCurve } from "../lib/ml/metrics.ts";
 import { fitLogistic } from "../lib/ml/logistic.ts";
 import { kmeans, silhouette, dbscan, agglomerative, fitPCA, fitGMM, tsneAffinities, tsne, knnPreserved, fitIsolation, makeHighD, adjustedRand } from "../lib/ml/unsup.ts";
+import { forward, makeNet, lossGrad, gradCheck, Opt, optimisePath, fitPerceptron, conv2d, convOutSize, layerGradNorms, trainNet, netAccuracy, deadUnits } from "../lib/ml/nn.ts";
 
 const F = JSON.parse(fs.readFileSync("tests/fixtures/sklearn.json", "utf8"));
 const close = (a, b, tol, msg) => assert.ok(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)), `${msg ?? ""} got ${a}, want ${b}`);
@@ -184,4 +185,59 @@ test("isolation forest ranks planted outliers highest", () => {
 test("adjusted Rand index: identical groupings score 1, relabelling does not matter", () => {
   assert.equal(adjustedRand([0, 0, 1, 1, 2, 2], [5, 5, 3, 3, 9, 9]), 1);
   assert.ok(Math.abs(adjustedRand([0, 0, 1, 1], [0, 1, 0, 1])) < 0.6);
+});
+
+// ---- Part 5: neural networks ----
+const NF = F.nnfx;
+test("perceptron weights match scikit-learn after 10 epochs", () => {
+  const p = fitPerceptron(NF.perc.X, NF.perc.y, 10);
+  p.w.forEach((v, i) => assert.ok(Math.abs(v - NF.perc.w[i]) < 1e-9)); assert.ok(Math.abs(p.b - NF.perc.b) < 1e-9);
+});
+test("perceptron converges on separable data and cycles on XOR", () => {
+  const sep = fitPerceptron([[0.1, 0.2], [0.2, 0.1], [0.8, 0.9], [0.9, 0.8]], [0, 0, 1, 1], 20), xor = fitPerceptron([[0, 0], [1, 1], [0, 1], [1, 0]], [0, 0, 1, 1], 50);
+  assert.equal(sep.mistakes.at(-1), 0); assert.ok(xor.mistakes.at(-1) > 0);
+});
+test("backprop loss and gradients match an independent numpy network (tanh and relu)", () => {
+  for (const act of ["tanh", "relu"]) {
+    const f = NF.mlp[act], n = makeNet([2, 5, 4, 1], { act }); f.W.forEach((w, l) => n.W[l].set(w)); f.b.forEach((b, l) => n.b[l].set(b));
+    const g = lossGrad(n, NF.nx, NF.ny, { l2: 0.01 });
+    assert.ok(Math.abs(g.loss - f.loss) < 1e-9, act + " loss");
+    f.gW.forEach((gw, l) => gw.forEach((v, k) => assert.ok(Math.abs(g.W[l][k] - v) < 1e-9, act + " gW")));
+    f.gb.forEach((gb, l) => gb.forEach((v, k) => assert.ok(Math.abs(g.b[l][k] - v) < 1e-9, act + " gb")));
+  }
+});
+test("finite-difference gradient check passes, and flags a planted bug", () => {
+  const n = makeNet([2, 6, 6, 1], { act: "tanh", seed: 3 });
+  assert.ok(gradCheck(n, NF.nx, NF.ny, { l2: 0.01, count: 8 }) < 1e-6);
+  const bad = gradCheck(n, NF.nx, NF.ny, { bug: "no-act-deriv", count: 8 }); assert.ok(bad > 1e-2, "bug error " + bad);
+  const r = makeNet([2, 6, 6, 6, 1], { act: "tanh", seed: 4, residual: true }); assert.ok(gradCheck(r, NF.nx, NF.ny, { count: 8 }) < 1e-6, "residual");
+});
+test("optimisers follow the same updates as the reference (SGD, momentum, RMSprop, Adam)", () => {
+  for (const [m, o] of Object.entries(NF.opt)) {
+    const p = [Float64Array.from(NF.p0)], opt = new Opt(m, o.lr);
+    for (let i = 0; i < 25; i++) opt.step(p, [Float64Array.from(p[0].map((v, j) => 2 * NF.cvec[j] * v))]);
+    p[0].forEach((v, j) => assert.ok(Math.abs(v - o.final[j]) < 1e-9, m));
+  }
+});
+test("convolution matches scipy with padding and stride, and the output-size formula", () => {
+  const out = conv2d(NF.conv.img, NF.conv.k, 2, 1); assert.equal(out.length, NF.conv.out.length);
+  out.forEach((r, i) => r.forEach((v, j) => assert.ok(Math.abs(v - NF.conv.out[i][j]) < 1e-9)));
+  assert.equal(convOutSize(9, 3, 1, 2), NF.conv.out.length);
+});
+test("a hidden layer learns XOR, a straight line cannot", () => {
+  const X = [], y = []; for (let i = 0; i < 80; i++) { const a = i % 2, b = (i >> 1) % 2; X.push([a + (rng(i)() - 0.5) * 0.2, b + (rng(i + 99)() - 0.5) * 0.2]); y.push(a ^ b); }
+  const h = makeNet([2, 8, 1], { act: "tanh", seed: 2 }); trainNet(h, X, y, { epochs: 300, lr: 0.05 });
+  const l = makeNet([2, 1], { act: "tanh", seed: 2 }); trainNet(l, X, y, { epochs: 300, lr: 0.05 });
+  assert.ok(netAccuracy(h, X, y) > 0.95); assert.ok(netAccuracy(l, X, y) < 0.8);
+});
+test("sigmoid gradients vanish with depth, ReLU with He init and residuals keep them alive", () => {
+  const { X, y } = makeData("moons", 60), ratio = (n) => { const g = layerGradNorms(n, X, y); return g[0] / g[g.length - 1]; };
+  const sig = ratio(makeNet([2, ...Array(10).fill(8), 1], { act: "sigmoid" })), rel = ratio(makeNet([2, ...Array(10).fill(8), 1], { act: "relu" })), res = ratio(makeNet([2, ...Array(10).fill(8), 1], { act: "sigmoid", residual: true }));
+  assert.ok(sig < 1e-3, "sigmoid " + sig); assert.ok(rel > sig * 100, "relu " + rel); assert.ok(res > sig * 100, "residual " + res);
+});
+test("inverted dropout keeps the average hidden activation, and the dead-unit counter works", () => {
+  const net = makeNet([2, 6, 1], { act: "tanh", seed: 8 }), x = [0.3, 0.8], base = forward(net, x).A[1], r = rng(5), mean = new Float64Array(6);
+  for (let i = 0; i < 6000; i++) forward(net, x, 0.4, r).A[1].forEach((v, j) => (mean[j] += v / 6000));
+  base.forEach((v, j) => assert.ok(Math.abs(mean[j] - v) < 0.05, "unit " + j));
+  const d = makeNet([2, 4, 1], { act: "relu" }); d.b[0].fill(-100); assert.equal(deadUnits(d, [[0.5, 0.5], [0.2, 0.9]]), 1);
 });

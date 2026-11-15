@@ -1,0 +1,49 @@
+{
+  "slug": "optimisers",
+  "realLife": "Adam is the default in most deep-learning libraries. Many image models are still trained with SGD and momentum.",
+  "summary": "Four ways to take steps downhill: plain, with momentum, and two that rescale by recent gradient size.",
+  "headline": "Same hill, four different walkers",
+  "overview": [
+    "Plain SGD steps straight down the slope. Momentum keeps part of the last step so it builds speed along consistent directions. RMSprop and Adam divide each step by a running measure of gradient size, so flat directions get bigger steps and steep ones get smaller steps.",
+    "The two surfaces here are not neural-network losses. They are small shapes that make each method's habits visible."
+  ],
+  "widget": "lab-optim",
+  "break": {
+    "label": "Break it",
+    "explains": "Set a learning rate too high for the narrow valley. SGD overshoots further on every step and blows up. Momentum, RMSprop and Adam survive the same setting, because their steps are damped or rescaled."
+  },
+  "check": {
+    "question": "Why does plain SGD zigzag in a narrow valley?",
+    "options": [
+      "The slope across the valley is far steeper than along it, so steps mostly point across",
+      "The learning rate is too small",
+      "It ignores the gradient"
+    ],
+    "answer": 0
+  },
+  "data": "Ravine: a long narrow bowl. Banana: a curved valley, the Rosenbrock shape. Every method starts from the same point. Learning rates are scaled per method as noted under the chart. The engine's updates match a reference implementation for all four.",
+  "maths": [
+    "$$\\text{SGD:}\\quad w\\leftarrow w-\\eta\\,g$$",
+    "$$\\text{momentum:}\\quad v\\leftarrow\\mu v+g,\\quad w\\leftarrow w-\\eta\\,v$$",
+    "$$\\text{Adam:}\\quad m\\leftarrow\\beta_1m+(1-\\beta_1)g,\\ \\ v\\leftarrow\\beta_2v+(1-\\beta_2)g^2,\\ \\ w\\leftarrow w-\\eta\\,\\frac{m/(1-\\beta_1^t)}{\\sqrt{v/(1-\\beta_2^t)}+\\epsilon}$$",
+    "Whether Adam generalises worse than SGD is contested. Wilson et al. found adaptive methods did worse on test data in several tasks. Other work finds weight decay and smaller learning rates narrow the gap without closing it. This page shows optimisation speed only, not generalisation."
+  ],
+  "code": "import torch\nopt = torch.optim.Adam(model.parameters(), lr=1e-3)   # or SGD(..., momentum=0.9)\nloss.backward(); opt.step(); opt.zero_grad()",
+  "sources": [
+    {
+      "title": "Wilson et al.: The Marginal Value of Adaptive Gradient Methods",
+      "url": "https://ar5iv.arxiv.org/html/1705.08292",
+      "note": "adaptive methods can generalise worse than SGD"
+    },
+    {
+      "title": "Keskar and Socher: Improving generalisation by switching from Adam to SGD",
+      "url": "https://alphaxiv.org/abs/1712.07628",
+      "note": "the generalisation gap and a hybrid fix"
+    },
+    {
+      "title": "On Adam-trained models (SC18 workshop)",
+      "url": "https://sc18.supercomputing.org/proceedings/workshops/workshop_pages/ws_mlhpce117.html",
+      "note": "weight decay and smaller learning rates help but a gap remains"
+    }
+  ]
+}

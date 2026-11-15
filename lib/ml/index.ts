@@ -9,3 +9,4 @@ export * from "./biasvar.ts";
 export * from "./calibration.ts";
 export * from "./datasets.ts"; export * from "./classify.ts";
 export * from "./unsup.ts";
+export * from "./nn.ts";

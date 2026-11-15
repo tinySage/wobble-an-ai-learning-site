@@ -3,24 +3,24 @@ import { useEffect, useMemo, useState } from "react";
 import { adjustedRand, agglomerative, dbscan, eigSym, fitGMM, fitIsolation, fitPCA, kmeans, makeCloud, makeHighD, rng, silhouette, standardiseCols, tsne, type Cov, type Linkage, type Shape } from "@/lib/ml";
 import { Btn, Row, Slider, Stat } from "./widgets";
 
-const S = 380, PAL = ["#58792F", "#C4416B", "#D9A441", "#5B7DB1", "#8A6BB1", "#3E8E8A", "#B5651D", "#7A7F6E"], NOISE = "#B9BDB0";
-const col = (l: number) => (l < 0 ? NOISE : PAL[l % PAL.length]);
-const Pick = ({ label, items, value, set }: { label: string; items: string[]; value: string; set: (v: string) => void }) => (
+export const S = 380, PAL = ["#58792F", "#C4416B", "#D9A441", "#5B7DB1", "#8A6BB1", "#3E8E8A", "#B5651D", "#7A7F6E"], NOISE = "#B9BDB0";
+export const col = (l: number) => (l < 0 ? NOISE : PAL[l % PAL.length]);
+export const Pick = ({ label, items, value, set }: { label: string; items: string[]; value: string; set: (v: string) => void }) => (
   <div role="group" aria-label={label} style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{items.map((k) => <button key={k} className="btn" onClick={() => set(k)} aria-pressed={value === k} style={{ minHeight: 44, padding: "0 14px", background: value === k ? "var(--matcha)" : "transparent", color: value === k ? "#fff" : "var(--ink)", borderColor: "var(--line)" }}>{k}</button>)}</div>
 );
-const Layout = ({ left, right, note }: { left: React.ReactNode; right: React.ReactNode; note: string }) => (
+export const Layout = ({ left, right, note }: { left: React.ReactNode; right: React.ReactNode; note: string }) => (
   <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
     <div className="lab" style={{ display: "grid", gridTemplateColumns: "minmax(0,420px) 1fr", gap: 18, alignItems: "start" }}>{left}<div style={{ display: "flex", flexDirection: "column", gap: 12 }}>{right}</div></div>
     <p className="mute" style={{ margin: 0, fontSize: 13 }}>{note}</p><style>{`@media(max-width:760px){.lab{grid-template-columns:1fr!important}}`}</style>
   </div>
 );
 type Dom = [number, number];
-function Plot({ X, colors, label, dom = [0, 1], rings, children, size = 4.6 }: { X: number[][]; colors: string[]; label: string; dom?: Dom; rings?: boolean[]; children?: React.ReactNode; size?: number }) {
+export function Plot({ X, colors, label, dom = [0, 1], rings, children, size = 4.6 }: { X: number[][]; colors: string[]; label: string; dom?: Dom; rings?: boolean[]; children?: React.ReactNode; size?: number }) {
   const p = (v: number) => 6 + ((v - dom[0]) / (dom[1] - dom[0])) * (S - 12);
   return (<svg viewBox={`0 0 ${S} ${S}`} role="img" aria-label={label} style={{ width: "100%", height: "auto", background: "#fff", borderRadius: 14, border: "1px solid var(--line)" }}>
     {children}{X.map((q, i) => <circle key={i} cx={p(q[0])} cy={S - p(q[1])} r={size} fill={colors[i]} stroke={rings?.[i] ? "#26301F" : "#fff"} strokeWidth={rings?.[i] ? 2.2 : 1} opacity={0.92} />)}</svg>);
 }
-const Mini = ({ series, hi, w = 300, h = 110, label }: { series: { v: number[]; c: string; n: string }[]; hi: number; w?: number; h?: number; label: string }) => {
+export const Mini = ({ series, hi, w = 300, h = 110, label }: { series: { v: number[]; c: string; n: string }[]; hi: number; w?: number; h?: number; label: string }) => {
   const all = series.flatMap((s) => s.v), lo = Math.min(...all), up = Math.max(...all), n = series[0].v.length, x = (i: number) => 14 + (i / (n - 1)) * (w - 28), y = (v: number) => h - 14 - ((v - lo) / (up - lo || 1)) * (h - 28);
   return (<svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={label} style={{ width: "100%", maxWidth: 360, height: "auto" }}>
     {series.map((s) => <g key={s.n}><polyline fill="none" stroke={s.c} strokeWidth={2} points={s.v.map((v, i) => `${x(i)},${y(v)}`).join(" ")} /><circle cx={x(hi)} cy={y(s.v[hi])} r={5} fill={s.c} /></g>)}
@@ -129,7 +129,7 @@ function AnomalyLab() {
   const grid = useMemo(() => Array.from({ length: 28 * 28 }, (_, i) => f.score([-0.2 + ((i % 28) + 0.5) / 28 * 1.4, -0.2 + (Math.floor(i / 28) + 0.5) / 28 * 1.4])), [f]), mn = Math.min(...grid), mx = Math.max(...grid), cs = (S - 12) / 28;
   return <Layout note="Rose background: the forest finds that region easy to isolate, so a point there is suspicious. Rings mark the points flagged as anomalies."
     left={<Plot X={X} dom={[-0.2, 1.2]} colors={X.map((_, i) => (i >= base.length ? "#26301F" : "#58792F"))} rings={X.map((_, i) => flag.has(i))} label="Isolation forest scores and flagged points" size={4.4}>
-      {grid.map((v, i) => <rect key={i} x={6 + (i % 28) * cs} y={6 + (27 - Math.floor(i / 28)) * cs} width={cs + 0.9} height={cs + 0.9} shapeRendering="crispEdges" fill="#C4416B" opacity={((v - mn) / (mx - mn || 1)) * 0.55} />)}</Plot>}
+      {grid.map((v, i) => <rect key={i} x={6 + (i % 28) * cs} y={6 + (27 - Math.floor(i / 28)) * cs} width={cs + 1.2} height={cs + 1.2} fill={`rgb(${[196, 65, 107].map((c) => Math.round(255 + (c - 255) * ((v - mn) / (mx - mn || 1)) * 0.55)).join(",")})`} />)}</Plot>}
     right={<>
       <Row><Stat k="flagged" v={String(flag.size)} /><Stat k="real anomalies caught" v={`${caught} of ${nOut}`} /><Stat k="false alarms" v={String(wrong)} tone={wrong > 3 ? "bad" : undefined} /></Row>
       <Pick label="Normal data" items={["blobs", "moons", "uneven"]} value={shape} set={(v) => setShape(v as Shape)} />
