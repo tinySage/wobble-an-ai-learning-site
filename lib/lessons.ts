@@ -26,3 +26,7 @@ export function lessonMeta(slug: string) {
   return { ...l, index: i + 1, total: list.length, prev: list[i - 1] ?? null, next: list[i + 1] ?? null };
 }
 export { PARTS };
+
+/** Live lessons in teaching order (curriculum order, not file-name order). */
+export const liveInOrder = (): string[] => allPlanned().map((l) => l.slug).filter(isLive);
+export const firstLive = (): string => liveInOrder()[0];

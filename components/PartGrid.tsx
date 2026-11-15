@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PARTS, isLive } from "@/lib/lessons";
+import { DoneMark } from "@/components/Progress";
 
 export default function PartGrid() {
   return (
@@ -13,7 +14,7 @@ export default function PartGrid() {
           <div className="grid">
             {p.lessons.map((l, i) => {
               const live = isLive(l.slug);
-              const inner = (<><div style={{ display: "flex", justifyContent: "space-between" }}><span className="tag">{String(i + 1).padStart(2, "0")}</span>{!live && <span className="pill">SOON</span>}</div><span className="t">{l.title}</span><span className="tag">{l.verb}</span></>);
+              const inner = (<><div style={{ display: "flex", justifyContent: "space-between" }}><span className="tag">{String(i + 1).padStart(2, "0")} <DoneMark slug={l.slug} /></span>{!live && <span className="pill">SOON</span>}</div><span className="t">{l.title}</span><span className="tag">{l.verb}</span></>);
               return live
                 ? <Link key={l.slug} href={`/lessons/${l.slug}/`} className="card lcard">{inner}</Link>
                 : <div key={l.slug} className="card lcard soon" aria-disabled="true">{inner}</div>;
