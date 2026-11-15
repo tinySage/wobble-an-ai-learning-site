@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import "@fontsource/pixelify-sans/400.css";
-import "@fontsource/pixelify-sans/500.css";
-import "@fontsource/pixelify-sans/600.css";
-import "@fontsource/pixelify-sans/700.css";
-import "@fontsource/silkscreen/400.css";
-import "@fontsource/vt323/400.css";
-import "@fontsource-variable/manrope";
+import "@fontsource/barlow/400.css";
+import "@fontsource/barlow/500.css";
+import "@fontsource/barlow/600.css";
+import "@fontsource/barlow-condensed/500.css";
+import "@fontsource/barlow-condensed/600.css";
 import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
 
