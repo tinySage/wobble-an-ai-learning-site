@@ -54,5 +54,90 @@ def gdm(lr, steps):
     return losses
 lmax = float(np.linalg.eigvalsh(H)[-1])
 out["multi"] = dict(X=MX.tolist(), y=my.tolist(), lmax=lmax, lr=0.5/lmax, losses=gdm(0.5/lmax, 40), div_lr=1.2*2/lmax, div_losses=gdm(1.2*2/lmax, 40), ok_lr=0.95*2/lmax, ok_losses=gdm(0.95*2/lmax, 40))
+from sklearn.metrics import brier_score_loss, average_precision_score
+from sklearn.calibration import calibration_curve
+cy = (rng.uniform(size=300) < 0.2).astype(int); cs = np.clip(cy*0.3 + rng.normal(0.2, 0.2, 300), 0.001, 0.999)
+fp_, mp_ = calibration_curve(cy, cs, n_bins=10, strategy="uniform")
+out["calib"] = dict(y=cy.tolist(), score=cs.tolist(), brier=float(brier_score_loss(cy, cs)), ap=float(average_precision_score(cy, cs)), frac=fp_.tolist(), mean=mp_.tolist())
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.svm import SVC
+CX = np.vstack([rng.normal([.3,.35], .12, (40,2)), rng.normal([.65,.62], .12, (40,2))]); cy = np.array([0]*40 + [1]*40)
+gx, gy = np.meshgrid(np.linspace(0,1,15), np.linspace(0,1,15)); G = np.column_stack([gx.ravel(), gy.ravel()])
+out["cls"] = dict(X=CX.tolist(), y=cy.tolist(), G=G.tolist(),
+  knn=KNeighborsClassifier(5).fit(CX, cy).predict_proba(G)[:,1].tolist(),
+  nb=GaussianNB().fit(CX, cy).predict_proba(G)[:,1].tolist(),
+  tree=DecisionTreeClassifier(max_depth=3, random_state=0).fit(CX, cy).predict_proba(G)[:,1].tolist(),
+  gb=GradientBoostingClassifier(n_estimators=15, learning_rate=0.3, max_depth=2, random_state=0).fit(CX, cy).predict_proba(G)[:,1].tolist(),
+  svm_rbf=SVC(C=1.0, gamma=3.0).fit(CX, cy).decision_function(G).tolist(), svm_n=int(SVC(C=1.0, gamma=3.0).fit(CX, cy).n_support_.sum()))
+
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
+from sklearn.metrics import silhouette_score
+from sklearn.decomposition import PCA
+from sklearn.mixture import GaussianMixture
+from sklearn.manifold._t_sne import _joint_probabilities
+from scipy.spatial.distance import squareform, pdist
+UX = np.vstack([rng.normal([.2,.3], .06, (25,2)), rng.normal([.7,.3], .06, (25,2)), rng.normal([.5,.8], .06, (25,2))])
+init = UX[[0, 30, 55]]; km = KMeans(3, init=init, n_init=1, algorithm="lloyd").fit(UX)
+th = np.linspace(0, np.pi, 40); MN = np.vstack([np.column_stack([.3+.3*np.cos(th), .42+.22*np.sin(th)]), np.column_stack([.7-.3*np.cos(th), .58-.22*np.sin(th)])]) + rng.normal(0, .02, (80,2))
+Z5 = rng.normal(size=(100,5)) @ rng.normal(size=(5,5)); pc = PCA().fit(Z5)
+def gm(cov):
+    base = GaussianMixture(3, covariance_type=cov, random_state=0).fit(UX)
+    return base
+gms = {}
+for cv in ["full", "diag", "spherical"]:
+    mu0 = init.copy(); w0 = np.ones(3)/3
+    c0 = np.array([np.cov(UX.T) for _ in range(3)])
+    if cv == "full": p0 = np.array([np.linalg.inv(c) for c in c0])
+    elif cv == "diag": p0 = np.array([1/np.diag(c) for c in c0])
+    else: p0 = np.array([2/np.trace(c) for c in c0])
+    g = GaussianMixture(3, covariance_type=cv, tol=1e-9, max_iter=500, weights_init=w0, means_init=mu0, precisions_init=p0).fit(UX)
+    gms[cv] = dict(loglik=float(g.score(UX)*len(UX)), bic=float(g.bic(UX)), aic=float(g.aic(UX)), means=g.means_.tolist(), weights=g.weights_.tolist(), cov0=c0.tolist())
+HX = rng.normal(size=(40,6)); D2 = (squareform(pdist(HX, "sqeuclidean"))).astype(np.float32)
+Pj = squareform(_joint_probabilities(D2, 12.0, 0))
+out["unsup"] = dict(X=UX.tolist(), init=init.tolist(), km_inertia=float(km.inertia_), km_labels=km.labels_.tolist(), km_centers=km.cluster_centers_.tolist(), sil=float(silhouette_score(UX, km.labels_)),
+  moons=MN.tolist(), db=DBSCAN(eps=0.07, min_samples=4).fit(MN).labels_.tolist(),
+  agg={l: AgglomerativeClustering(3, linkage=l).fit(UX).labels_.tolist() for l in ["single","complete","average","ward"]},
+  pca_X=Z5.tolist(), pca_values=pc.explained_variance_.tolist(), pca_ratio=pc.explained_variance_ratio_.tolist(), pca_abs=np.abs(pc.components_).tolist(),
+  gmm=gms, tsne_X=HX.tolist(), tsne_P=Pj.tolist())
+
+from sklearn.linear_model import Perceptron
+from scipy.signal import correlate2d
+PX = rng.normal(size=(40,2)) * 0.5 + np.array([0.5,0.5]); py_ = ((PX[:,0] - .5) * (PX[:,1] - .5) > 0).astype(int)
+pp = Perceptron(max_iter=10, tol=None, shuffle=False, eta0=1.0, penalty=None, fit_intercept=True).fit(PX, py_)
+def np_mlp(sizes, act, Ws, bs, X, y, l2):
+    f = {"tanh": np.tanh, "relu": lambda z: np.maximum(z, 0)}[act]; d = {"tanh": lambda z: 1-np.tanh(z)**2, "relu": lambda z: (z>0)*1.0}[act]
+    A=[X]; Z=[]
+    for l in range(len(Ws)):
+        z = A[-1] @ Ws[l].T + bs[l]; Z.append(z); A.append(f(z) if l < len(Ws)-1 else 1/(1+np.exp(-z)))
+    p = A[-1][:,0]; N=len(y); loss = float(np.mean(-(y*np.log(p)+(1-y)*np.log(1-p))) + sum(0.5*l2*np.sum(W**2) for W in Ws))
+    dz = (p - y)[:,None]; gW=[None]*len(Ws); gb=[None]*len(Ws)
+    for l in range(len(Ws)-1, -1, -1):
+        gW[l] = dz.T @ A[l] / N + l2*Ws[l]; gb[l] = dz.sum(0)/N
+        if l > 0: dz = (dz @ Ws[l]) * d(Z[l-1])
+    return loss, gW, gb
+sizes=[2,5,4,1]; nn_fx={}
+NX = rng.normal(size=(30,2)); ny = (NX[:,0]*NX[:,1] > 0).astype(int)
+for act in ["tanh","relu"]:
+    Ws=[rng.normal(size=(sizes[i+1],sizes[i]))*0.6 for i in range(3)]; bs=[rng.normal(size=sizes[i+1])*0.1 for i in range(3)]
+    loss,gW,gb = np_mlp(sizes, act, Ws, bs, NX, ny, 0.01)
+    nn_fx[act]=dict(W=[w.ravel().tolist() for w in Ws], b=[b.tolist() for b in bs], loss=loss, gW=[g.ravel().tolist() for g in gW], gb=[g.tolist() for g in gb])
+cvec = np.array([1.0, 8.0, 3.0]); p0 = np.array([1.0, -1.0, 0.7]); opts={}
+def run(method, lr, steps=25):
+    p = p0.copy(); m = np.zeros(3); v = np.zeros(3)
+    for t in range(1, steps+1):
+        g = 2*cvec*p
+        if method=="sgd": p = p - lr*g
+        elif method=="momentum": m = 0.9*m + g; p = p - lr*m
+        elif method=="rmsprop": v = 0.99*v + 0.01*g*g; p = p - lr*g/(np.sqrt(v)+1e-8)
+        else:
+            m = 0.9*m + 0.1*g; v = 0.999*v + 0.001*g*g; p = p - lr*(m/(1-0.9**t))/(np.sqrt(v/(1-0.999**t))+1e-8)
+    return p.tolist()
+for mth, lr in [("sgd",0.05),("momentum",0.02),("rmsprop",0.05),("adam",0.1)]: opts[mth]=dict(lr=lr, final=run(mth, lr))
+cimg = rng.normal(size=(9,9)); ck = rng.normal(size=(3,3))
+conv_fx = dict(img=cimg.tolist(), k=ck.tolist(), out=correlate2d(np.pad(cimg,1), ck, mode="valid")[::2, ::2].tolist())
+out["nnfx"] = dict(perc=dict(X=PX.tolist(), y=py_.tolist(), w=pp.coef_[0].tolist(), b=float(pp.intercept_[0])), mlp=nn_fx, nx=NX.tolist(), ny=ny.tolist(), opt=opts, cvec=cvec.tolist(), p0=p0.tolist(), conv=conv_fx)
 json.dump(out, open("tests/fixtures/sklearn.json", "w"))
 print("ok", out["sklearn"])

@@ -23,9 +23,8 @@
   "realLife": "Fraud models that look perfect on last year's data and fail on this month's are often overfit.",
   "data": "Fourteen training points and sixty held-out test points, all from one sine wave with noise. Results depend heavily on this small sample, so another draw would put the turning point elsewhere. Degrees stop at 9 to keep the log-scale chart readable.",
   "maths": [
-    "training error = mean (ŷ − y)² on the points used to fit",
-    "test error = the same, on points the fit never saw",
-    "Gap between them grows as the number of free weights approaches the number of points."
+    "$$\\text{test error}=\\frac1m\\sum_{j\\in\\text{test}}(\\hat y_j-y_j)^2$$",
+    "Training error is the same sum over the points used to fit. The gap between them grows as the number of free weights approaches the number of points."
   ],
   "code": "for d in range(1, 10):\n    m = make_pipeline(PolynomialFeatures(d), LinearRegression()).fit(Xtr, ytr)\n    print(d, mse(ytr, m.predict(Xtr)), mse(yte, m.predict(Xte)))",
   "sources": [

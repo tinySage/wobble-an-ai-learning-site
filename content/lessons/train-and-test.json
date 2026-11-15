@@ -1,0 +1,47 @@
+{
+  "slug": "train-and-test",
+  "summary": "Hold some data back. The score on data the model never saw is the one to believe.",
+  "headline": "Grade it on questions it has not seen",
+  "overview": [
+    "Fit the model on one part of the data and keep the rest locked away. The held-back part is a rehearsal for the real world.",
+    "Notice how much the score moves when you re-split. One split gives one opinion, and a small test set gives a noisy one."
+  ],
+  "widget": "train-test",
+  "break": {
+    "label": "Break it",
+    "explains": "Score the model on its own training data. It looks far better, because it has already seen those points."
+  },
+  "check": {
+    "question": "Your model scores very well on the data it was trained on. What does that tell you about new data?",
+    "options": [
+      "It will do equally well",
+      "Very little by itself",
+      "It will do better"
+    ],
+    "answer": 1
+  },
+  "realLife": "A model graded on its own homework passes every exam in a notebook and fails in production.",
+  "data": "Forty points from a noisy sine wave. A degree-5 polynomial is fitted to the training part each time. The strip under the plot shows the test error from 40 different random splits at the chosen size.",
+  "maths": [
+    "$$\\text{test error}=\\frac1m\\sum_{j\\in\\text{test}}(\\hat y_j-y_j)^2$$",
+    "The model never uses test rows to choose weights, settings or features. Smaller test sets give noisier scores. Smaller training sets give a weaker model."
+  ],
+  "code": "from sklearn.model_selection import train_test_split\nXtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.3, random_state=0)\nm = model.fit(Xtr, ytr)\nprint(m.score(Xte, yte))",
+  "sources": [
+    {
+      "title": "scikit-learn: cross-validation and evaluation",
+      "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "note": "why a held-out set is needed"
+    },
+    {
+      "title": "scikit-learn: common pitfalls",
+      "url": "https://scikit-learn.org/stable/common_pitfalls.html",
+      "note": "split first, before any preprocessing"
+    },
+    {
+      "title": "MLU-Explain: visual essays on core ML ideas",
+      "url": "https://mlu-explain.github.io",
+      "note": "includes interactive cross-validation and ROC articles"
+    }
+  ]
+}

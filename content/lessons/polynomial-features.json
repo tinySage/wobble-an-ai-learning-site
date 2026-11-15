@@ -23,7 +23,7 @@
   "realLife": "Spline and basis-function models in analytics tools are this same idea with smarter columns.",
   "data": "Fourteen training points from a sine wave plus noise. The dashed line is the true pattern, which a real project would not know.",
   "maths": [
-    "ŷ = w₀ + w₁x + w₂x² + … + w_d x^d",
+    "$$\\hat y=w_0+w_1x+w_2x^2+\\dots+w_d x^d$$",
     "Build columns x, x², …, x^d, then run ordinary least squares.",
     "Here x is mapped to [−1, 1] first, because raw powers are badly scaled."
   ],

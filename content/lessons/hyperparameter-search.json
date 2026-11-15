@@ -1,0 +1,48 @@
+{
+  "slug": "hyperparameter-search",
+  "summary": "Try settings systematically, and see why random often beats a grid.",
+  "headline": "Random search wastes fewer trials",
+  "overview": [
+    "Settings you choose before training, like the penalty strength, are hyperparameters. Trying every combination on a grid sounds thorough.",
+    "If only one setting really matters, a 3 by 3 grid tries just 3 values of it. Nine random trials try nine."
+  ],
+  "widget": "hyper-search",
+  "break": {
+    "label": "Break it",
+    "explains": "Make the second setting useless. Now the grid repeats the same few values of the one that matters, and random search tends to win."
+  },
+  "check": {
+    "question": "Only one of your two settings really matters. Why can random search beat a grid?",
+    "options": [
+      "Random numbers are better",
+      "It tries more distinct values of the setting that matters",
+      "Grids cannot be used with cross-validation"
+    ],
+    "answer": 1
+  },
+  "realLife": "Whatever you search with, score each trial with cross-validation, then confirm once on data you never touched.",
+  "data": "A toy score surface with a narrow good region in the first setting. Grid and random each get the same number of trials. The averages are over 300 repeated random draws, with the grid fixed.",
+  "maths": [
+    "Grid trials grow exponentially with the number of settings:",
+    "$$\\text{trials}=(\\text{values per setting})^{\\,\\text{settings}}$$",
+    "Bergstra and Bengio found most datasets depend on only a few settings, and which few differs by dataset. Their random search matched or beat grid-plus-manual tuning on five of seven datasets, so it is not a guaranteed win."
+  ],
+  "code": "from sklearn.model_selection import RandomizedSearchCV\nfrom scipy.stats import loguniform\nsearch = RandomizedSearchCV(model, {'C': loguniform(1e-3, 1e3)}, n_iter=20, cv=5).fit(X, y)",
+  "sources": [
+    {
+      "title": "Bergstra and Bengio: random search for hyper-parameter optimization",
+      "url": "https://jmlr.org/papers/v13/bergstra12a.html",
+      "note": "random trials more efficient than grid in their experiments"
+    },
+    {
+      "title": "scikit-learn: common pitfalls",
+      "url": "https://scikit-learn.org/stable/common_pitfalls.html",
+      "note": "pipelines inside hyper-parameter tuning"
+    },
+    {
+      "title": "scikit-learn: cross-validation",
+      "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "note": "scoring each trial"
+    }
+  ]
+}

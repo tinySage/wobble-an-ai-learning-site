@@ -1,0 +1,49 @@
+{
+  "slug": "k-means",
+  "realLife": "Colour reduction in images, customer segments and grouping sensor readings all use k-means because it is fast and easy to explain.",
+  "summary": "Drop k centres, pull each point to its nearest one, move the centres, repeat.",
+  "headline": "Centres that chase their own points",
+  "overview": [
+    "k-means starts with k centres. Every point joins its nearest centre, then each centre moves to the average of its points. Those two steps repeat until nothing changes.",
+    "The number k is your guess. Inertia, the total squared distance to the centres, always shrinks as k grows, so it cannot tell you the right k by itself. Silhouette, which compares how close a point is to its own group versus the next nearest, gives a second opinion."
+  ],
+  "widget": "lab-kmeans",
+  "break": {
+    "label": "Break it",
+    "explains": "Run k-means on two concentric rings. It can only cut with straight lines between centres, so each ring is split in half instead of separated from the other."
+  },
+  "check": {
+    "question": "Why can't you choose k by picking the lowest inertia?",
+    "options": [
+      "Inertia always falls as k rises, reaching zero when every point is its own cluster",
+      "Inertia cannot be computed for large k",
+      "Lower inertia means worse clusters"
+    ],
+    "answer": 0
+  },
+  "data": "One hundred and fifty unlabelled points in 2D from four shapes. The true groups are kept aside only to score agreement. Starting centres come from k-means++ unless you switch to random.",
+  "maths": [
+    "$$\\text{inertia}=\\sum_{i=1}^{n}\\min_{j}\\,\\lVert x_i-\\mu_j\\rVert^2$$",
+    "$$\\mu_j\\leftarrow\\frac{1}{|C_j|}\\sum_{x\\in C_j}x$$",
+    "$$s(i)=\\frac{b(i)-a(i)}{\\max\\{a(i),\\,b(i)\\}}$$",
+    "a is the mean distance to the point's own cluster, b the mean distance to the nearest other cluster. k-means always converges, but possibly to a local minimum, which is why scikit-learn offers k-means++ starts and repeated runs."
+  ],
+  "code": "from sklearn.cluster import KMeans\nfrom sklearn.metrics import silhouette_score\nm = KMeans(n_clusters=3, n_init=10, random_state=0).fit(X)\nm.inertia_, silhouette_score(X, m.labels_)",
+  "sources": [
+    {
+      "title": "scikit-learn: clustering and k-means",
+      "url": "https://scikit-learn.org/stable/modules/clustering",
+      "note": "inertia, Lloyd's algorithm, local minima, k-means++"
+    },
+    {
+      "title": "DataCamp: five clustering algorithms",
+      "url": "https://www.datacamp.com/blog/clustering-in-machine-learning-5-essential-clustering-algorithms",
+      "note": "silhouette and Davies-Bouldin as a guide, not a verdict"
+    },
+    {
+      "title": "scikit-learn: k-means assumptions demo",
+      "url": "https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_assumptions.html",
+      "note": "when the spherical-cluster assumption breaks"
+    }
+  ]
+}

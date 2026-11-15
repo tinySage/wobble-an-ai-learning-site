@@ -1,0 +1,48 @@
+{
+  "slug": "support-vector-machines",
+  "realLife": "SVMs remain a good choice for small, clean datasets with many features, such as some text and genomics tasks.",
+  "summary": "Find the boundary with the widest empty gap, bending space with a kernel if needed.",
+  "headline": "Widest street between the groups",
+  "overview": [
+    "A support vector machine looks for the boundary with the biggest margin, so only the points nearest to it, the support vectors, matter.",
+    "An RBF kernel lets the boundary bend. C sets how many slips are tolerated, and gamma sets how far each support vector's influence reaches."
+  ],
+  "widget": "lab-svm",
+  "break": {
+    "label": "Break it",
+    "explains": "Raise gamma so each point's reach shrinks to nothing. The boundary becomes small circles around single points, which memorises the training set."
+  },
+  "check": {
+    "question": "What does a very large gamma do in an RBF SVM?",
+    "options": [
+      "Every point influences the whole plane",
+      "Each support vector only influences its immediate surroundings, which overfits",
+      "It removes support vectors"
+    ],
+    "answer": 1
+  },
+  "data": "Soft-margin SVM fitted by a simplified SMO solver. Features here are already on a 0 to 1 scale, which matters because SVMs are sensitive to scale.",
+  "maths": [
+    "$$K(x,x')=\\exp\\!\\big(-\\gamma\\lVert x-x'\\rVert^2\\big)$$",
+    "$$f(x)=\\sum_{i\\in SV}\\alpha_i y_i K(x_i,x)+b$$",
+    "$$\\min_{w,b,\\xi}\\ \\tfrac12\\lVert w\\rVert^2+C\\sum_i\\xi_i$$"
+  ],
+  "code": "from sklearn.svm import SVC\nm = make_pipeline(StandardScaler(), SVC(C=1.0, gamma='scale')).fit(X, y)",
+  "sources": [
+    {
+      "title": "scikit-learn: RBF SVM parameters",
+      "url": "https://scikit-learn.org/stable/auto_examples/svm/plot_rbf_parameters.html",
+      "note": "C and gamma; too large a gamma cannot be fixed by C"
+    },
+    {
+      "title": "scikit-learn: RBF parameters, older version",
+      "url": "https://scikit-learn.org/0.23/auto_examples/svm/plot_rbf_parameters.html",
+      "note": "small gamma behaves like a linear model"
+    },
+    {
+      "title": "MLU-Explain: visual essays",
+      "url": "https://mlu-explain.github.io",
+      "note": "related interactive articles"
+    }
+  ]
+}

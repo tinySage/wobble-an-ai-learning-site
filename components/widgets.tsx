@@ -2,12 +2,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { biasVariance, diverged, fitLinear, fitPolynomial, gradientDescent, gradientDescentMulti, lambdaMax, mse, rng, stepsToConverge, truth } from "@/lib/ml";
 
-const W = 640, H = 360, PAD = 36;
-const sx = (x: number) => PAD + x * (W - 2 * PAD);
-const sy = (y: number, lo = -1.6, hi = 1.6) => H - PAD - ((y - lo) / (hi - lo)) * (H - 2 * PAD);
-const C = { ink: "var(--ink)", matcha: "var(--matcha)", rose: "var(--rose)", mute: "var(--mute)", soft: "var(--soft)" };
+export const W = 640, H = 360, PAD = 36;
+export const sx = (x: number) => PAD + x * (W - 2 * PAD);
+export const sy = (y: number, lo = -1.6, hi = 1.6) => H - PAD - ((y - lo) / (hi - lo)) * (H - 2 * PAD);
+export const C = { ink: "var(--ink)", matcha: "var(--matcha)", rose: "var(--rose)", mute: "var(--mute)", soft: "var(--soft)" };
 
-function useReduced() {
+export function useReduced() {
   const [r, setR] = useState(false);
   useEffect(() => { const m = window.matchMedia("(prefers-reduced-motion: reduce)"); setR(m.matches); }, []);
   return r;
@@ -27,21 +27,21 @@ function useSweep(values: number[], set: (v: number) => void, ms = 380) {
 const Frame = ({ children, label }: { children: React.ReactNode; label: string }) => (
   <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}><svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} style={{ width: "100%", height: "auto", background: "#fff", borderRadius: 14, border: "1px solid var(--line)" }}>{children}</svg>{null}</div>
 );
-const Row = ({ children }: { children: React.ReactNode }) => <div style={{ display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center" }}>{children}</div>;
-const Btn = ({ onClick, children, kind = "ghost" }: { onClick: () => void; children: React.ReactNode; kind?: "ghost" | "primary" | "break" }) => (
+export const Row = ({ children }: { children: React.ReactNode }) => <div style={{ display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center" }}>{children}</div>;
+export const Btn = ({ onClick, children, kind = "ghost" }: { onClick: () => void; children: React.ReactNode; kind?: "ghost" | "primary" | "break" }) => (
   <button className={`btn ${kind === "primary" ? "primary" : "ghost"}`} style={kind === "break" ? { background: "var(--rose)", color: "#fff", borderColor: "transparent" } : undefined} onClick={onClick}>{children}</button>
 );
-const Slider = ({ label, value, min, max, step, onChange, show }: { label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void; show: string }) => (
+export const Slider = ({ label, value, min, max, step, onChange, show }: { label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void; show: string }) => (
   <label style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 220, flex: 1, font: "600 13px var(--sans)" }}>
     <span>{label}: <span className="mono">{show}</span></span>
     <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(+e.target.value)} aria-label={label} style={{ accentColor: "#58792F", minHeight: 44 }} />
   </label>
 );
-const Stat = ({ k, v, tone }: { k: string; v: string; tone?: "bad" }) => (
+export const Stat = ({ k, v, tone }: { k: string; v: string; tone?: "bad" }) => (
   <div style={{ padding: "8px 14px", border: "1px solid var(--line)", borderRadius: 12, background: "var(--panel)" }}><div className="eyebrow mute" style={{ fontSize: 10 }}>{k}</div><div className="mono" style={{ fontSize: 18, color: tone === "bad" ? "var(--rose)" : undefined }}>{v}</div></div>
 );
-const Axes = () => <g stroke="rgba(38,48,31,.2)"><line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} /><line x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} /></g>;
-const fmt = (v: number) => !Number.isFinite(v) ? "blew up" : Math.abs(v) >= 1e4 || (v !== 0 && Math.abs(v) < 1e-3) ? v.toExponential(1) : v.toFixed(3);
+export const Axes = () => <g stroke="rgba(38,48,31,.2)"><line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} /><line x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} /></g>;
+export const fmt = (v: number) => !Number.isFinite(v) ? "blew up" : Math.abs(v) >= 1e4 || (v !== 0 && Math.abs(v) < 1e-3) ? v.toExponential(1) : v.toFixed(3);
 
 /* ---------- 1. fit a line, add points, break it with an outlier ---------- */
 export function LinearFit() {

@@ -1,0 +1,48 @@
+{
+  "slug": "perceptron",
+  "realLife": "A single perceptron is rarely used alone today, but it is the unit stacked into every neural network.",
+  "summary": "One neuron: a weighted sum and a threshold, nudged only when it gets a point wrong.",
+  "headline": "The smallest learner there is",
+  "overview": [
+    "A perceptron adds up its inputs with weights, adds a bias, and says yes or no by the sign. When it misclassifies a point, it pushes the weights toward that point's label. When it is right, nothing changes.",
+    "If a straight line can separate the groups, this rule is guaranteed to stop making mistakes after a finite number of updates. If not, it keeps shuffling forever."
+  ],
+  "widget": "lab-perceptron",
+  "break": {
+    "label": "Break it",
+    "explains": "Choose XOR. No straight line separates the two diagonals, so the mistake bars never reach zero however many passes you allow."
+  },
+  "check": {
+    "question": "What happens when a perceptron is trained on data no straight line can separate?",
+    "options": [
+      "It converges anyway",
+      "It keeps updating and never settles",
+      "It stops after one pass"
+    ],
+    "answer": 1
+  },
+  "data": "Eighty points in 2D, labels 0 or 1. Weights start at zero. Each pass visits the points in the same order. The engine reproduces scikit-learn's Perceptron weights exactly after ten passes.",
+  "maths": [
+    "$$\\hat y=\\operatorname{sign}(w^{\\top}x+b)$$",
+    "$$\\text{if } y_i\\,(w^{\\top}x_i+b)\\le 0:\\quad w\\leftarrow w+y_i x_i,\\quad b\\leftarrow b+y_i\\qquad(y_i\\in\\{-1,+1\\})$$",
+    "If the data is separable with margin γ and every point has length at most R, the rule makes at most (R/γ)² updates (Novikoff, 1962). The bound says nothing about which of the many separating lines it finds."
+  ],
+  "code": "from sklearn.linear_model import Perceptron\nm = Perceptron(max_iter=1000, tol=1e-3, random_state=0).fit(X, y)\nm.coef_, m.intercept_",
+  "sources": [
+    {
+      "title": "TheoremPath: the perceptron",
+      "url": "https://theorempath.com/topics/perceptron",
+      "note": "convergence bound and the non-separable failure case"
+    },
+    {
+      "title": "Univ. of Washington CSE 415: perceptron limitations",
+      "url": "https://courses.cs.washington.edu/courses/cse415/03wi/slides/Neural/tsld010.htm",
+      "note": "XOR is not linearly separable"
+    },
+    {
+      "title": "MacMyths: perceptron with scikit-learn",
+      "url": "https://macmyths.com/perceptron-explained-with-a-python-example/",
+      "note": "scikit-learn's estimator and stopping on non-separable data"
+    }
+  ]
+}

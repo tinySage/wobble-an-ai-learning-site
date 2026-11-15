@@ -1,0 +1,48 @@
+{
+  "slug": "anomaly-detection",
+  "realLife": "Fraud screens, machine fault monitoring and data-quality checks use isolation forests because they need no labels and handle many features.",
+  "summary": "Rare points are easy to cut off from the rest, so count how few random cuts it takes.",
+  "headline": "Odd ones out are quick to isolate",
+  "overview": [
+    "An isolation forest chops the space with random splits. A point in the middle of a crowd needs many cuts before it is alone. A point far from everything needs only a few.",
+    "The average number of cuts becomes an anomaly score. You still have to decide a threshold, and that choice, not the algorithm, is where most real mistakes happen."
+  ],
+  "widget": "lab-anomaly",
+  "break": {
+    "label": "Break it",
+    "explains": "Flag 25% of the data when only 2 points are truly strange. The rest are false alarms. Contamination is a belief about your data, not something the model can find out for you."
+  },
+  "check": {
+    "question": "What does a short average path in an isolation forest indicate?",
+    "options": [
+      "The point is likely an anomaly",
+      "The point is at the cluster centre",
+      "The forest is too small"
+    ],
+    "answer": 0
+  },
+  "data": "Normal points from three shapes plus up to twelve planted outliers placed around the edges. You choose the share flagged, and the widget counts how many real anomalies were caught and how many flags were wrong.",
+  "maths": [
+    "$$s(x)=2^{-\\,E[h(x)]/c(\\psi)},\\qquad c(m)=2\\big(\\ln(m-1)+0.5772\\big)-\\frac{2(m-1)}{m}$$",
+    "h(x) is the path length to isolate x in a random tree, averaged over the forest. ψ is the subsample size. A score near 1 is anomalous, and a score well below 0.5 is normal.",
+    "scikit-learn reports the opposite sign, so lower means more abnormal. Its 'auto' threshold follows the paper, while a numeric contamination flags that share of the training data."
+  ],
+  "code": "from sklearn.ensemble import IsolationForest\nm = IsolationForest(n_estimators=100, contamination=0.04, random_state=0).fit(X)\nm.predict(X_new)  # -1 = anomaly, 1 = normal",
+  "sources": [
+    {
+      "title": "scikit-learn: IsolationForest",
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html",
+      "note": "path length as normality, contamination and the offset"
+    },
+    {
+      "title": "scikit-learn: outlier and novelty detection",
+      "url": "https://scikit-learn.org/stable/modules/outlier_detection.html",
+      "note": "isolation forest alongside LOF and one-class SVM"
+    },
+    {
+      "title": "Liu, Ting and Zhou: Isolation Forest (ICDM 2008)",
+      "url": "https://ieeexplore.ieee.org/document/4781136",
+      "note": "the original paper"
+    }
+  ]
+}

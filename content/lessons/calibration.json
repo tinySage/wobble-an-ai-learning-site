@@ -1,0 +1,48 @@
+{
+  "slug": "calibration",
+  "summary": "A model that says 80% should be right about 80% of the time.",
+  "headline": "Does 80% mean 80%?",
+  "overview": [
+    "Calibration asks whether stated probabilities match reality. Collect everything the model called 70% likely and check how many came true.",
+    "A model can rank cases perfectly and still be wildly overconfident. Ranking and honesty are different skills."
+  ],
+  "widget": "calibration",
+  "break": {
+    "label": "Break it",
+    "explains": "Push the overconfidence up. The reliability curve bends away from the diagonal while AUC stays exactly where it was."
+  },
+  "check": {
+    "question": "A model's AUC is high but its reliability curve is far from the diagonal. What is true?",
+    "options": [
+      "It ranks well but its percentages are not trustworthy",
+      "It is perfect",
+      "AUC must be wrong"
+    ],
+    "answer": 0
+  },
+  "realLife": "Risk scores that drive decisions, such as who gets an intervention, need honest percentages, not just good ordering.",
+  "data": "Three thousand cases with a known true probability. The model's stated probability is a stretched or squashed version of the truth. Everything is measured on 1,500 cases; the recalibration step is fitted on the other 1,500.",
+  "maths": [
+    "$$\\text{Brier}=\\frac1n\\sum_i(p_i-y_i)^2$$",
+    "$$\\mathrm{ECE}=\\sum_b \\frac{n_b}{n}\\,\\big|\\bar p_b-\\bar y_b\\big|$$",
+    "A strictly increasing change to the probabilities leaves AUC unchanged. Recalibration here is Platt scaling: a one-feature logistic regression on the logit of the score."
+  ],
+  "code": "from sklearn.calibration import CalibratedClassifierCV, calibration_curve\ncal = CalibratedClassifierCV(model, method='sigmoid', cv=3).fit(Xtr, ytr)\ncalibration_curve(yte, cal.predict_proba(Xte)[:, 1], n_bins=10)",
+  "sources": [
+    {
+      "title": "scikit-learn: probability calibration curves",
+      "url": "https://scikit-learn.org/stable/auto_examples/calibration/plot_calibration_curve.html",
+      "note": "reliability diagrams, Brier and log loss; ROC AUC is unchanged by a monotonic transform"
+    },
+    {
+      "title": "scikit-learn: calibration example, older version",
+      "url": "https://scikit-learn.org/1.1/auto_examples/calibration/plot_calibration_curve.html",
+      "note": "said calibration does not significantly change precision, recall or F1"
+    },
+    {
+      "title": "Google ML Crash Course: prediction bias",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc",
+      "note": "predicted rate against observed rate"
+    }
+  ]
+}

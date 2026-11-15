@@ -1,0 +1,48 @@
+{
+  "slug": "decision-boundaries",
+  "realLife": "Before choosing a model, plot your data. If the groups wrap around each other, a linear model is the wrong tool.",
+  "summary": "Different models carve the plane in different ways. Compare them on the same points.",
+  "headline": "Every model draws its own map",
+  "overview": [
+    "A classifier is a rule that colours every spot on the plane. The shape of its boundary shows what it can and cannot express.",
+    "A straight line cannot separate groups arranged like the corners of XOR. A curved model, a tree or nearest neighbours can."
+  ],
+  "widget": "lab-boundaries",
+  "break": {
+    "label": "Break it",
+    "explains": "Pick XOR with a straight-line model. No line can separate it, so accuracy stays near a coin flip."
+  },
+  "check": {
+    "question": "Why does a straight-line model fail on XOR?",
+    "options": [
+      "Too little data",
+      "No single line separates the groups",
+      "Too much noise"
+    ],
+    "answer": 1
+  },
+  "data": "Four shapes: two blobs, two moons, a ring inside a ring, and XOR corners. Same 160 points per shape, 70/30 split. Curved means logistic regression on x, y and their squares and product.",
+  "maths": [
+    "A linear model's boundary is the set where w·x + b = 0, a straight line in two dimensions.",
+    "Adding squares and products of the inputs lets the same model draw ellipses and hyperbolas.",
+    "kNN and trees draw boundaries without a formula: patchwork regions built from the data."
+  ],
+  "code": "from sklearn.preprocessing import PolynomialFeatures\nm = make_pipeline(PolynomialFeatures(2), LogisticRegression())",
+  "sources": [
+    {
+      "title": "scikit-learn: decision trees",
+      "url": "https://scikit-learn.org/stable/modules/tree.html",
+      "note": "trees find XOR hard to express"
+    },
+    {
+      "title": "scikit-learn: linear models",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "note": "linear boundaries"
+    },
+    {
+      "title": "scikit-learn: nearest neighbors",
+      "url": "https://scikit-learn.org/stable/modules/neighbors.html",
+      "note": "non-parametric boundaries"
+    }
+  ]
+}

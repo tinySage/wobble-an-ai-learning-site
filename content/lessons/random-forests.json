@@ -1,0 +1,48 @@
+{
+  "slug": "random-forests",
+  "realLife": "Random forests are a dependable default for tabular data because they need little tuning.",
+  "summary": "Average many different trees and the noise cancels out.",
+  "headline": "Many noisy trees make one steady vote",
+  "overview": [
+    "Each tree sees a random resample of the data and, at each split, only a random subset of the features. They disagree in different ways, so their average is steadier than any one tree.",
+    "More trees help, but only up to a point. After that the picture stops changing."
+  ],
+  "widget": "lab-forest",
+  "break": {
+    "label": "Break it",
+    "explains": "Use a single deep tree. The boundary is jagged and unstable. Raise the number of trees and watch it smooth out."
+  },
+  "check": {
+    "question": "Why does averaging many trees help?",
+    "options": [
+      "Each tree becomes more accurate",
+      "Their different errors partly cancel, lowering variance",
+      "It removes noisy points"
+    ],
+    "answer": 1
+  },
+  "data": "Same shapes as before. Each tree is trained on a bootstrap resample with one randomly chosen feature available at each split, and the forest averages their probabilities.",
+  "maths": [
+    "$$\\hat p(x)=\\frac1B\\sum_{b=1}^{B}\\hat p_b(x)$$",
+    "Variance of an average of B trees falls when the trees are not perfectly correlated.",
+    "Breiman's original forest takes a majority vote. scikit-learn averages predicted probabilities instead."
+  ],
+  "code": "from sklearn.ensemble import RandomForestClassifier\nm = RandomForestClassifier(n_estimators=100, max_features='sqrt').fit(X, y)",
+  "sources": [
+    {
+      "title": "scikit-learn: ensemble methods",
+      "url": "https://scikit-learn.org/stable/modules/ensemble.html",
+      "note": "bootstrap samples, feature subsets, averaging probabilities, variance reduction at slight bias cost"
+    },
+    {
+      "title": "scikit-learn: RandomForestClassifier",
+      "url": "https://scikit-learn.org/1.4/modules/generated/sklearn.ensemble.RandomForestClassifier.html",
+      "note": "max_features default is sqrt"
+    },
+    {
+      "title": "scikit-learn: decision trees",
+      "url": "https://scikit-learn.org/stable/modules/tree.html",
+      "note": "trees are unstable, ensembles help"
+    }
+  ]
+}

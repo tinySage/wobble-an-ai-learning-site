@@ -1,0 +1,49 @@
+{
+  "slug": "clustering-methods",
+  "realLife": "DBSCAN suits map data and sensor hot spots, where clusters have odd shapes and some readings are simply stray.",
+  "summary": "Compare k-means, DBSCAN and hierarchical clustering on shapes where they disagree.",
+  "headline": "Different methods, different ideas of a cluster",
+  "overview": [
+    "k-means thinks a cluster is a round blob around a centre. DBSCAN thinks it is a dense region separated from other dense regions, and leaves sparse points as noise. Hierarchical clustering repeatedly merges the two closest groups, and you choose where to cut.",
+    "None of them is correct in general. Which one fits depends on what shape you believe the groups have."
+  ],
+  "widget": "lab-clusters",
+  "break": {
+    "label": "Break it",
+    "explains": "Run k-means on two interleaved moons. A straight cut between two centres slices through both moons, so agreement with the true groups drops close to zero."
+  },
+  "check": {
+    "question": "What does DBSCAN do with a point in a sparse region?",
+    "options": [
+      "Forces it into the nearest cluster",
+      "Labels it noise",
+      "Starts a new cluster for it"
+    ],
+    "answer": 1
+  },
+  "data": "Moons, rings, blobs and blobs of unequal density. Agreement is the adjusted Rand index: 1 means the same grouping as the truth, about 0 means no better than chance.",
+  "maths": [
+    "DBSCAN: a point is core if at least minPts points, itself included, lie within distance eps of it.",
+    "$$d_{\\text{single}}=\\min_{a\\in A,\\,b\\in B}\\lVert a-b\\rVert,\\qquad d_{\\text{complete}}=\\max_{a\\in A,\\,b\\in B}\\lVert a-b\\rVert$$",
+    "$$\\Delta_{\\text{Ward}}=\\frac{n_A n_B}{n_A+n_B}\\lVert\\bar a-\\bar b\\rVert^2$$",
+    "Single linkage can chain through a thin bridge of points. Ward merges the pair that raises within-group variance least, so it behaves a bit like k-means."
+  ],
+  "code": "from sklearn.cluster import DBSCAN, AgglomerativeClustering\nDBSCAN(eps=0.07, min_samples=4).fit_predict(X)\nAgglomerativeClustering(n_clusters=3, linkage='ward').fit_predict(X)",
+  "sources": [
+    {
+      "title": "scikit-learn: clustering overview",
+      "url": "https://scikit-learn.org/stable/modules/clustering",
+      "note": "comparison table of parameters, geometry and use cases"
+    },
+    {
+      "title": "DataCamp: five clustering algorithms",
+      "url": "https://www.datacamp.com/blog/clustering-in-machine-learning-5-essential-clustering-algorithms",
+      "note": "DBSCAN handles noise and irregular shapes"
+    },
+    {
+      "title": "The Neural Base: clustering for data exploration",
+      "url": "https://theneuralbase.com/scikit-learn/learn/intermediate/clustering-for-data-exploration/",
+      "note": "scale features first, or clustering quietly breaks"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "slug": "data-leakage",
+  "summary": "Information from the test rows sneaks into training and the score lies.",
+  "headline": "The answer key was in the room",
+  "overview": [
+    "Leakage means the model saw something at training time that it will not have at prediction time. The score looks excellent and means nothing.",
+    "Here every label is a coin flip, so honest accuracy is 50%. Choose your features before splitting and cross-validation reports something much better."
+  ],
+  "widget": "leakage",
+  "break": {
+    "label": "Break it",
+    "explains": "Pick the most useful-looking features using every row, then cross-validate. Pure noise now seems predictable."
+  },
+  "check": {
+    "question": "Why does choosing features on the whole dataset before cross-validating inflate the score?",
+    "options": [
+      "The test rows helped decide which features to keep",
+      "There are too few folds",
+      "Logistic regression is biased"
+    ],
+    "answer": 0
+  },
+  "realLife": "Scaling, imputing, selecting features and even PCA all learn from data, so every one of them belongs inside the training fold.",
+  "data": "Sixty rows and 200 columns of random numbers, with random 0/1 labels. Ten features are chosen by their link to the label, then logistic regression is cross-validated over five folds. Twelve fresh draws are shown. The numbers vary by draw, which is why there are twelve.",
+  "maths": [
+    "Honest: for each fold, pick features using training rows only. Leaky: pick features using all rows, then split.",
+    "With 200 noise columns, some always look related to the labels by chance. Picking them with the test rows included keeps the lucky ones."
+  ],
+  "code": "from sklearn.pipeline import make_pipeline\nfrom sklearn.feature_selection import SelectKBest\npipe = make_pipeline(SelectKBest(k=10), LogisticRegression())\ncross_val_score(pipe, X, y, cv=5)   # selection redone inside each fold",
+  "sources": [
+    {
+      "title": "scikit-learn: common pitfalls, data leakage",
+      "url": "https://scikit-learn.org/stable/common_pitfalls.html",
+      "note": "definition, the feature-selection example, and pipelines as the fix"
+    },
+    {
+      "title": "scikit-learn: cross-validation",
+      "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "note": "pipelines with cross_val_score"
+    },
+    {
+      "title": "UBC CPSC 330 lecture notes",
+      "url": "https://ubc-cs.github.io/cpsc330-2025S1/_downloads/f2640d62acf4da4698745737e25ebe1c/Lec09.pdf",
+      "note": "evaluation pitfalls in course form"
+    }
+  ]
+}

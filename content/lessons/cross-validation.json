@@ -1,0 +1,47 @@
+{
+  "slug": "cross-validation",
+  "summary": "Rotate which slice is held back so every row is tested once.",
+  "headline": "Many small exams instead of one",
+  "overview": [
+    "Cut the data into k slices. Train on k − 1 of them, test on the one left out, and repeat until every slice has had a turn.",
+    "The average is a steadier estimate than any one split. The spread between folds tells you how much to trust it."
+  ],
+  "widget": "cross-val",
+  "break": {
+    "label": "Break it",
+    "explains": "Try 40 single splits and report only the best-looking. The number is real, and it is also a lie about how the model will do."
+  },
+  "check": {
+    "question": "You run many experiments and report the best score you saw. What went wrong?",
+    "options": [
+      "Nothing, best is best",
+      "The score is optimistic because you picked the luckiest result",
+      "Cross-validation was skipped"
+    ],
+    "answer": 1
+  },
+  "realLife": "Teams that report the best of many runs ship models that quietly underperform their slide.",
+  "data": "The same forty points as the last lesson, shuffled once with a fixed seed, with a degree-5 polynomial. Fold sizes follow scikit-learn's KFold rule: the first n mod k folds get one extra row.",
+  "maths": [
+    "$$\\mathrm{CV}=\\frac1k\\sum_{i=1}^{k}\\mathrm{err}_i$$",
+    "The model is refitted for each fold. The spread is the standard deviation of the k fold errors. Choosing the best of many splits adds selection bias on top of ordinary noise."
+  ],
+  "code": "from sklearn.model_selection import cross_val_score, KFold\nscores = cross_val_score(model, X, y, cv=KFold(5, shuffle=True, random_state=0))\nprint(scores.mean(), scores.std())",
+  "sources": [
+    {
+      "title": "scikit-learn: cross-validation",
+      "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "note": "KFold and cross_val_score"
+    },
+    {
+      "title": "scikit-learn: ROC with cross-validation",
+      "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_roc_crossval.html",
+      "note": "shows how results vary from fold to fold"
+    },
+    {
+      "title": "scikit-learn: common pitfalls",
+      "url": "https://scikit-learn.org/stable/common_pitfalls.html",
+      "note": "pipelines inside cross-validation"
+    }
+  ]
+}

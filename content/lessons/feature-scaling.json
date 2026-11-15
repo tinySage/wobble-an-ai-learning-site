@@ -23,7 +23,7 @@
   "realLife": "Models with a penalty, distance-based models and neural networks all need it. Tree models do not.",
   "data": "Thirty rows. Feature one is 0 to 1, feature two is 0 to 300. The target depends on both. Both runs use 90% of their own stable learning-rate limit.",
   "maths": [
-    "z = (x − mean) / std",
+    "$$z=\\frac{x-\\mu}{\\sigma}$$",
     "scikit-learn's StandardScaler divides by the population std (n, not n−1).",
     "Fit the scaler on training data only, then reuse its mean and std on new data."
   ],
