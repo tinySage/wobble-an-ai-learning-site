@@ -1,0 +1,42 @@
+{
+  "slug": "diffusion",
+  "summary": "Add noise until the data is gone, then learn to undo it one small step at a time.",
+  "headline": "Generate by denoising",
+  "overview": [
+    "The forward process is fixed: each step adds a little noise, and any noisy version can be produced in one jump straight from the clean data. Training is therefore cheap: pick a step, add the matching noise, and ask a network to predict that noise. Sampling starts from pure noise and removes it step by step.",
+    "Predicting the noise is the same as estimating the score, the direction towards denser data, up to a known scale. In this widget the exact score of the noised data replaces the network, so any failure comes from the setup rather than from learning. Sampling needs many steps, and later work cut that to around fifty."
+  ],
+  "widget": "lab-diffusion",
+  "break": {
+    "label": "Break it",
+    "explains": "Stop the noising early, so about two thirds of the signal is left at the last step. Starting the undoing from pure noise no longer matches where the noising ended, and the left bump swells from 30% to nearly half of the samples."
+  },
+  "check": {
+    "question": "Why is training a diffusion model cheap even with hundreds of noising steps?",
+    "options": [
+      "Any noisy version can be produced in one step from the clean data",
+      "Only one noising step is ever used",
+      "It needs no training data"
+    ],
+    "answer": 0
+  },
+  "realLife": "Diffusion is the idea behind many current image, audio and video generators.",
+  "data": "A made-up one-dimensional distribution: two bumps at -2 and +2 holding 30% and 70% of the points. 1,500 points and a linear noise schedule. No network is trained. The exact score of the noised mixture does the denoising.",
+  "maths": [
+    "$$\\bar\\alpha_t=\\prod_{s\\le t}(1-\\beta_s),\\qquad x_t=\\sqrt{\\bar\\alpha_t}\\,x_0+\\sqrt{1-\\bar\\alpha_t}\\,\\varepsilon$$",
+    "The reverse step subtracts the predicted noise and adds a little fresh noise. The noise estimate equals minus the square root of 1 minus the cumulated alpha times the score. If the cumulated alpha is still large at the last step, the noising never reached pure noise and the starting point of sampling is wrong."
+  ],
+  "code": "from diffusers import DDPMScheduler\nsched = DDPMScheduler(num_train_timesteps=1000)\nnoisy = sched.add_noise(x0, noise, timesteps)   # one-step forward process",
+  "sources": [
+    {
+      "title": "Ho, Jain and Abbeel (2020): denoising diffusion probabilistic models",
+      "url": "https://arxiv.org/abs/2006.11239",
+      "note": "forward process, noise prediction and the score connection"
+    },
+    {
+      "title": "Nichol and Dhariwal (2021): improved DDPMs",
+      "url": "https://arxiv.org/abs/2102.09672",
+      "note": "fewer sampling steps and the effect of the noise schedule"
+    }
+  ]
+}

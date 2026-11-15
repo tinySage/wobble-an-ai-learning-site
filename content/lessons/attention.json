@@ -1,0 +1,42 @@
+{
+  "slug": "attention",
+  "summary": "Each position asks a question, scores every position's answer, and takes a weighted average.",
+  "headline": "Look at everything, weigh by relevance",
+  "overview": [
+    "Every position makes a query, a key and a value. A query is compared with every key by a dot product, the scores go through softmax to become weights that add to one, and the output is the weighted average of the values. Stack many of these and you have a transformer, where each position can read from every other in one step.",
+    "The division by the square root of the vector length is easy to skip and costly. If query and key entries are independent with variance one, a dot product has variance equal to the length, so long vectors give large scores and softmax turns nearly one-hot. The original paper says it suspects this is why scaling helps. Later work notes that length is not the only reason scores can grow."
+  ],
+  "widget": "lab-attention",
+  "break": {
+    "label": "Break it",
+    "explains": "Use 1024-long vectors without the division. One key takes about 99% of the attention on average, and in a single draw often all of it. With the division the largest weight stays near 35% at every length."
+  },
+  "check": {
+    "question": "Why are attention scores divided by the square root of the vector length?",
+    "options": [
+      "Dot products grow with length and would push softmax towards a single key",
+      "To make every weight exactly equal",
+      "To save memory"
+    ],
+    "answer": 0
+  },
+  "realLife": "Transformers, the architecture behind current large language models, are built from attention layers like this one.",
+  "data": "Random Gaussian vectors: one query against eight keys, and the bars along the bottom average 30 random draws. No trained model is involved, so this shows the arithmetic of attention, not what a real model attends to.",
+  "maths": [
+    "$$\\mathrm{Attention}(Q,K,V)=\\mathrm{softmax}\\Big(\\frac{QK^{\\top}}{\\sqrt{d_k}}\\Big)V$$",
+    "For independent entries with mean 0 and variance 1, the dot product of a query and a key has mean 0 and variance d_k. Dividing by the square root of d_k brings the variance back to 1. A causal mask sets scores for later positions to minus infinity before softmax, so each position only reads the past."
+  ],
+  "code": "import torch.nn.functional as F\nout = F.scaled_dot_product_attention(q, k, v, is_causal=True)   # softmax(q k^T / sqrt(d)) v",
+  "sources": [
+    {
+      "title": "Vaswani et al. (2017): attention is all you need",
+      "url": "https://arxiv.org/abs/1706.03762",
+      "note": "scaled dot-product attention and why it is scaled"
+    },
+    {
+      "title": "Alternatives to the scaled dot product for attention",
+      "url": "https://arxiv.org/abs/2311.09406",
+      "note": "scores can grow for reasons beyond dimension"
+    }
+  ]
+}

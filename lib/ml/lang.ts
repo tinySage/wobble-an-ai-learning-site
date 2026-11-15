@@ -7,16 +7,19 @@ const gauss = (r: () => number) => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.
 
 const ANIMALS: [string, string][] = [["cat", "fish"], ["dog", "bone"], ["horse", "hay"], ["cow", "grass"]];
 const CAPITALS: [string, string][] = [["paris", "france"], ["rome", "italy"], ["madrid", "spain"], ["berlin", "germany"]];
-const SIZES: [string, string][] = [["king", "queen"], ["man", "woman"], ["boy", "girl"], ["prince", "princess"]];
+const SIZES: [string, string][] = [["king", "queen"], ["man", "woman"], ["prince", "princess"], ["boy", "girl"]];
 
 /** A small made-up corpus with clear structure: animals eat their food, capitals sit in countries, male and female pairs. */
 export function makeCorpus(sentences = 400, seed = 2): string[][] {
   const r = rng(seed), out: string[][] = [], P = <T,>(a: T[]) => a[Math.floor(r() * a.length)];
   for (let i = 0; i < sentences; i++) {
     const k = r();
-    if (k < 0.35) { const [a, f] = P(ANIMALS); out.push(["the", a, "eats", f]); }
-    else if (k < 0.65) { const [c, n] = P(CAPITALS); out.push(["the", "city", c, "is", "in", n]); }
-    else { const [m, f] = P(SIZES), fem = r() < 0.5; out.push(fem ? ["the", f, "is", "a", "she"] : ["the", m, "is", "a", "he"]); }
+    if (k < 0.25) { const [a, f] = P(ANIMALS); out.push(["the", a, "eats", f]); }
+    else if (k < 0.5) { const [c, n] = P(CAPITALS); out.push(["the", "city", c, "is", "in", n]); }
+    else {
+      const [m, f] = P(SIZES), fem = r() < 0.5, w = fem ? f : m, royal = SIZES.indexOf(SIZES.find((p) => p[0] === m)!) % 2 === 0;
+      out.push(r() < 0.5 ? ["the", w, "is", "a", fem ? "she" : "he"] : royal ? ["the", w, "sits", "on", "the", "throne"] : ["the", w, "walks", "to", "work"]);
+    }
   }
   return out;
 }

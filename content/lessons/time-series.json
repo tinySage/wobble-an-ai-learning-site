@@ -1,0 +1,47 @@
+{
+  "slug": "time-series",
+  "summary": "Test a forecaster the way it will be used: train on the past, test on what comes after.",
+  "headline": "Never test on the past",
+  "overview": [
+    "Random folds scatter the test points among the training points, so the model has already seen both neighbours of every point it is tested on. That is interpolation, and it makes a forecaster look better than it is. Walk-forward testing trains on everything before a block, tests on the block, then moves forward.",
+    "Features matter as much as splits. A feature that uses tomorrow's value, a scaler fitted on all the data, or a centred moving average leaks the future whatever the split. Sources agree on walk-forward testing and disagree on window shape: an expanding window suits stable processes, a sliding window suits drifting ones."
+  ],
+  "widget": "lab-series",
+  "break": {
+    "label": "Break it",
+    "explains": "Shuffle the folds and add a feature that averages yesterday and tomorrow. The reported error drops to about 0.12 against an honest 0.31, because tomorrow is not known when you forecast tomorrow."
+  },
+  "check": {
+    "question": "Why can random folds flatter a forecaster?",
+    "options": [
+      "Test points sit between training points, so the model has seen both neighbours",
+      "Random folds use less training data",
+      "Random folds always give a higher error"
+    ],
+    "answer": 0
+  },
+  "realLife": "Demand, energy and price forecasts are backtested walk-forward, because a model that only worked in one stretch of history shows up as drifting error.",
+  "data": "A made-up series of 144 points: a slow upward trend, a cycle of length 12 and mildly correlated noise. A ridge model uses the last two values, the value one cycle ago and the time index. Five folds. Different seeds move the numbers a little.",
+  "maths": [
+    "$$s=\\lfloor n/(K+1)\\rfloor,\\qquad \\text{fold } k \\text{ tests } [\\,n-(K-k+1)s,\\ n-(K-k)s\\,) \\text{ and trains on everything before it}$$",
+    "This is the split scikit-learn's TimeSeriesSplit makes. For forecasts several steps ahead, leave a gap so that no training target overlaps the information used for a test row. A gap does not repair a feature that already looks ahead."
+  ],
+  "code": "from sklearn.model_selection import TimeSeriesSplit\nfor train, test in TimeSeriesSplit(n_splits=5, gap=0).split(X):\n    model.fit(X[train], y[train])\n    errors.append(mse(y[test], model.predict(X[test])))",
+  "sources": [
+    {
+      "title": "scikit-learn: TimeSeriesSplit",
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html",
+      "note": "splits, gap and test size"
+    },
+    {
+      "title": "Hyndman and Athanasopoulos: time series cross-validation",
+      "url": "https://otexts.com/fpp3/tscv.html",
+      "note": "rolling-origin evaluation"
+    },
+    {
+      "title": "temporalcv: walk-forward CV model card",
+      "url": "https://temporalcv.readthedocs.io/en/latest/model_cards/walk_forward_cv.html",
+      "note": "gap and window choices"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "slug": "fairness",
+  "summary": "Fairness has several definitions, and when groups differ in outcome rates they cannot all hold at once.",
+  "headline": "You cannot have it all",
+  "overview": [
+    "Three common ideas are equal selection rates, equal error rates (true and false positives), and equal precision, meaning a positive prediction is right equally often in each group. When the groups have different outcome rates and the classifier is imperfect, equal error rates force unequal precision. Kleinberg and colleagues and Chouldechova proved versions of this independently.",
+    "How much this bites in practice is argued. Pleiss and colleagues show calibration fits with at most one error-rate constraint. Bell and colleagues argue that relaxed versions are often achievable in real problems. Choosing a definition is a decision about which mistakes matter, not something the data settles."
+  ],
+  "widget": "lab-fair",
+  "break": {
+    "label": "Break it",
+    "explains": "Force equal selection rates. With one cut-off the groups had equal error rates. Now group B's true positive rate is about 94% against 83% for A, and its false positive rate is about 31% against 17%."
+  },
+  "check": {
+    "question": "Two groups have different outcome rates and a classifier gives them equal true and false positive rates. What follows?",
+    "options": [
+      "Precision differs between the groups",
+      "Selection rates must be equal",
+      "The classifier must be perfect"
+    ],
+    "answer": 0
+  },
+  "realLife": "A well-known dispute over a recidivism score turned on this. Critics pointed to unequal false positive rates. The developer pointed to equal precision. Both were measuring something real.",
+  "data": "Synthetic: 6,000 people in two groups. The score is equally informative in both: roughly +1 for a positive outcome and -1 for a negative one, with the same noise. Group A has 50% positive outcomes and group B has 30% unless you change it.",
+  "maths": [
+    "$$\\mathrm{PPV}=\\frac{\\mathrm{TPR}\\,p}{\\mathrm{TPR}\\,p+\\mathrm{FPR}\\,(1-p)}$$",
+    "If TPR and FPR are equal across groups but the outcome rate p differs, PPV must differ. The widget uses this identity, and the tests check that it matches the measured precision."
+  ],
+  "code": "from fairlearn.metrics import MetricFrame, selection_rate, true_positive_rate, false_positive_rate\nmf = MetricFrame(metrics={'sel': selection_rate, 'tpr': true_positive_rate, 'fpr': false_positive_rate},\n                 y_true=y, y_pred=pred, sensitive_features=group)\nprint(mf.by_group)",
+  "sources": [
+    {
+      "title": "Chouldechova (2017): fair prediction with disparate impact",
+      "url": "https://arxiv.org/abs/1610.07524",
+      "note": "precision and error-rate parity cannot both hold"
+    },
+    {
+      "title": "Kleinberg, Mullainathan and Raghavan: inherent trade-offs in fair risk scores",
+      "url": "https://arxiv.org/abs/1609.05807",
+      "note": "calibration versus balance of errors"
+    },
+    {
+      "title": "Pleiss et al. (2017): on fairness and calibration",
+      "url": "https://arxiv.org/abs/1709.02012",
+      "note": "calibration with one error-rate constraint"
+    },
+    {
+      "title": "Bell et al. (2023): the possibility of fairness",
+      "url": "https://par.nsf.gov/servlets/purl/10437287",
+      "note": "relaxed versions of the trade-off in practice"
+    }
+  ]
+}

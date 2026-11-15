@@ -1,0 +1,42 @@
+{
+  "slug": "bandits-and-q-learning",
+  "summary": "Learn by trying: balance using what looks best with testing what might be better.",
+  "headline": "Explore, then exploit",
+  "overview": [
+    "A bandit has several arms with unknown win rates. Always pulling the best-looking arm can lock onto a poor one. Epsilon-greedy explores a fixed share of the time, UCB adds a bonus for arms it knows little about, and Thompson sampling draws from what it believes about each arm. Regret is the reward lost against always pulling the best arm.",
+    "Q-learning adds states: after each move it nudges its estimate of the move's value towards the reward plus the best value of the next state. On the cliff grid Q-learning, which learns about the greedy route, finds the shortest path along the edge. SARSA learns about the route it actually takes while exploring, so it keeps away from the cliff. Which is better depends on whether you care about the final route or the reward while learning."
+  ],
+  "widget": "lab-bandit",
+  "break": {
+    "label": "Break it",
+    "explains": "Set epsilon to 0 so the policy never explores. It latches onto the first arm that pays, and its regret keeps growing: about 150 after 1000 pulls against about 20 for Thompson sampling."
+  },
+  "check": {
+    "question": "What does SARSA learn on the cliff grid that Q-learning does not?",
+    "options": [
+      "A safer, longer route that allows for its own random slips",
+      "The shortest possible route",
+      "A route through the cliff"
+    ],
+    "answer": 0
+  },
+  "realLife": "Bandits decide which headline, ad or treatment to show next. Q-learning is the foundation that deep reinforcement learning methods such as DQN extend.",
+  "data": "Four coin-flip arms with win rates 25%, 45%, 60% and 70%, averaged over 16 runs. Cliff walking is the Sutton and Barto grid: 4 by 12, each step costs 1, the cliff costs 100 and sends you back to the start. Epsilon 0.1, learning rate 0.5, 800 episodes. At 600 pulls with epsilon 0.1 plain epsilon-greedy beats UCB here, which depends on UCB's exploration constant.",
+  "maths": [
+    "$$Q(s,a)\\leftarrow Q(s,a)+\\alpha\\big[r+\\gamma\\max_{a'}Q(s',a')-Q(s,a)\\big]$$",
+    "SARSA replaces the maximum with the value of the action it actually takes next. UCB picks the arm with the largest mean plus c times the square root of ln t over its pull count. A fixed epsilon keeps exploring forever, so its regret keeps growing slowly."
+  ],
+  "code": "# tabular Q-learning step\nQ[s, a] += alpha * (r + gamma * Q[s2].max() - Q[s, a])\n# SARSA step\nQ[s, a] += alpha * (r + gamma * Q[s2, a2] - Q[s, a])",
+  "sources": [
+    {
+      "title": "Sutton and Barto: reinforcement learning, an introduction",
+      "url": "https://incompleteideas.net/book/the-book-2nd.html",
+      "note": "bandits, Q-learning and the cliff example"
+    },
+    {
+      "title": "Afzali: reinforcement learning in R",
+      "url": "https://kamran-afzali.github.io/Bookdown_RLR",
+      "note": "bandits to temporal difference methods"
+    }
+  ]
+}

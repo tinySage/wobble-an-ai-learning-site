@@ -1,0 +1,47 @@
+{
+  "slug": "interpretability",
+  "summary": "Split a prediction into one credit per feature that adds back to the total.",
+  "headline": "Who gets the credit?",
+  "overview": [
+    "A Shapley value is a feature's average contribution over every order in which features could be added. The credits add up exactly to the prediction minus the average prediction. Permutation importance asks something different: how much does the error grow when a feature is shuffled.",
+    "With correlated features the two disagree. Permutation importance understates each copy because the other covers for it. Shapley splits the credit between them. Researchers also disagree on how a missing feature should be filled in. Filling from independent background rows can build unrealistic rows. Filling from the conditional distribution can give credit to a feature the model never uses."
+  ],
+  "widget": "lab-shap",
+  "break": {
+    "label": "Break it",
+    "explains": "Add a near copy of usage. The model spreads its weight over the pair, permutation importance for each falls because the other covers, and Shapley splits the credit between the two."
+  },
+  "check": {
+    "question": "What must the Shapley credits for one prediction add up to?",
+    "options": [
+      "The prediction minus the average prediction",
+      "The model's accuracy",
+      "One"
+    ],
+    "answer": 0
+  },
+  "realLife": "Attributions like these are used to debug models and to give reasons for single predictions, with the caveats in this lesson.",
+  "data": "160 made-up customers with tenure, usage, age and a noise column. The target is 2 times tenure plus 1.5 times usage minus age plus a little noise. A ridge model. Shapley values are exact over every subset of features, using 40 background rows.",
+  "maths": [
+    "$$\\phi_i=\\sum_{S\\subseteq N\\setminus\\{i\\}}\\frac{|S|!\\,(|N|-|S|-1)!}{|N|!}\\big[v(S\\cup\\{i\\})-v(S)\\big]$$",
+    "Here v(S) is the average prediction when features in S take this row's values and the others are filled from background rows. For a linear model this gives each coefficient times the feature's distance from its average, which the tests check."
+  ],
+  "code": "import shap\nexplainer = shap.Explainer(model.predict, X_background)\nvalues = explainer(X[:1])        # one credit per feature",
+  "sources": [
+    {
+      "title": "Kumar et al. (2020): problems with Shapley-value explanations",
+      "url": "https://arxiv.org/abs/2002.11097",
+      "note": "conditional versus interventional value functions"
+    },
+    {
+      "title": "Janzing, Minorics and Bloebaum (2019): feature relevance, a causal problem",
+      "url": "https://arxiv.org/abs/1910.13413",
+      "note": "why unconditional expectations are argued to be right"
+    },
+    {
+      "title": "Rozenfeld (2024): conditional versus marginal Shapley values",
+      "url": "https://arxiv.org/abs/2409.06157",
+      "note": "behaviour with correlated features"
+    }
+  ]
+}
