@@ -1,0 +1,17 @@
+{
+  "slug": "overfitting",
+  "summary": "A model with enough freedom can pass through every training point. Then it meets data it has not seen.",
+  "headline": "A model that memorises",
+  "overview": [
+    "A curve with enough freedom can pass through every training dot. Training error drops to almost nothing.",
+    "Then you show it points it has never seen. The error there tells you what the model really learned."
+  ],
+  "widget": "overfit-curve",
+  "break": { "label": "Break it", "explains": "Training error falls while test error jumps. Only the score on unseen data is worth trusting." },
+  "check": {
+    "question": "Training error keeps falling as you add model freedom. Test error rises. What is happening?",
+    "options": ["The model is learning more", "The model is memorising noise", "The data is wrong"],
+    "answer": 1
+  },
+  "realLife": "Fraud models that look perfect on last year's data and fail on this month's are often overfit."
+}
