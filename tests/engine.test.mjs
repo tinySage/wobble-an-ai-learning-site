@@ -78,3 +78,34 @@ test("overfitting lesson data: degree 9 fits the training points better than deg
   assert.ok(mse(b.predict(x), y) < mse(a.predict(x), y), "train error should fall");
   assert.ok(mse(b.predict(xt), yt) > 5 * mse(a.predict(xt), yt), "test error should rise");
 });
+
+import { gradientDescentMulti, lambdaMax } from "../lib/ml/gradient.ts";
+test("multi-feature descent and the stability limit match numpy", () => {
+  const m = F.multi;
+  close(lambdaMax(m.X), m.lmax, 1e-9, "lambdaMax");
+  gradientDescentMulti(m.X, m.y, m.lr, 40).losses.forEach((l, i) => close(l, m.losses[i], 1e-9, `loss ${i}`));
+  const ok = gradientDescentMulti(m.X, m.y, m.ok_lr, 40).losses, bad = gradientDescentMulti(m.X, m.y, m.div_lr, 40).losses;
+  close(ok[39], m.ok_losses[39], 1e-8, "just under the limit");
+  assert.ok(bad[bad.length - 1] > bad[0] * 10, "above 2/lambdaMax the loss must grow");
+  assert.ok(ok[39] < ok[0], "below 2/lambdaMax the loss must fall");
+});
+
+import { biasVariance } from "../lib/ml/biasvar.ts";
+test("bias falls and variance rises as the model gets more flexible", () => {
+  const d1 = biasVariance(1, { resamples: 150 }), d3 = biasVariance(3, { resamples: 150 }), d8 = biasVariance(8, { resamples: 150 });
+  assert.ok(d1.bias2 > 3 * d3.bias2, "a straight line should be far more biased than a cubic");
+  assert.ok(d8.variance > 5 * d3.variance, "degree 8 should have much higher variance than degree 3");
+  assert.ok(d3.total < d1.total && d3.total < d8.total, "the cubic should have the lowest total error of the three");
+  close(d3.total, d3.bias2 + d3.variance + d3.noise2, 1e-12, "decomposition adds up");
+});
+
+test("lambdaMax is the true stability limit, on raw and on standardised features", () => {
+  const r = rng(21), raw = Array.from({ length: 30 }, () => [r(), r() * 300]), y = raw.map((v) => 2 * v[0] + 0.01 * v[1] + 1 + (r() - 0.5) * 0.2);
+  const mu = [0, 1].map((j) => raw.reduce((a, v) => a + v[j], 0) / 30), sd = [0, 1].map((j) => Math.sqrt(raw.reduce((a, v) => a + (v[j] - mu[j]) ** 2, 0) / 30));
+  const std = raw.map((v) => v.map((t, j) => (t - mu[j]) / sd[j]));
+  for (const X of [raw, std]) {
+    const lim = 2 / lambdaMax(X), ok = gradientDescentMulti(X, y, 0.98 * lim, 400).losses, bad = gradientDescentMulti(X, y, 1.02 * lim, 400).losses;
+    assert.ok(ok[399] < ok[0], "just under the limit the loss falls");
+    assert.ok(bad[bad.length - 1] > bad[0] * 10, "just over the limit the loss grows");
+  }
+});

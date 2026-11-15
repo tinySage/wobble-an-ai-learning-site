@@ -45,5 +45,14 @@ out["logistic"] = dict(X=LX.tolist(), y=ly.tolist(), fits=[])
 for C in (1.0, 0.1):
     m = LogisticRegression(C=C, tol=1e-12, max_iter=10000).fit(LX, ly)
     out["logistic"]["fits"].append(dict(C=C, coef=m.coef_[0].tolist(), intercept=float(m.intercept_[0]), proba=m.predict_proba(LX)[:, 1].tolist()))
+MX = np.column_stack([rng.uniform(0, 1, 25), rng.uniform(0, 300, 25)]); my = 2*MX[:, 0] + 0.01*MX[:, 1] + 1 + rng.normal(0, .1, 25)
+Z = np.column_stack([MX, np.ones(25)]); H = 2/25 * Z.T @ Z
+def gdm(lr, steps):
+    wb = np.zeros(3); losses = []
+    for _ in range(steps):
+        r = Z @ wb - my; losses.append(float(np.mean(r**2))); wb = wb - lr * 2/25 * Z.T @ r
+    return losses
+lmax = float(np.linalg.eigvalsh(H)[-1])
+out["multi"] = dict(X=MX.tolist(), y=my.tolist(), lmax=lmax, lr=0.5/lmax, losses=gdm(0.5/lmax, 40), div_lr=1.2*2/lmax, div_losses=gdm(1.2*2/lmax, 40), ok_lr=0.95*2/lmax, ok_losses=gdm(0.95*2/lmax, 40))
 json.dump(out, open("tests/fixtures/sklearn.json", "w"))
 print("ok", out["sklearn"])

@@ -1,0 +1,48 @@
+{
+  "slug": "feature-scaling",
+  "summary": "Put inputs on a similar scale and descent stops zig-zagging.",
+  "headline": "Same data, different units, very different speed",
+  "overview": [
+    "When one input is measured in the hundreds and another is between 0 and 1, the loss bowl becomes a long narrow ravine. A learning rate safe for the steep side is tiny for the flat side.",
+    "Standardising each input to zero mean and unit spread makes the bowl round."
+  ],
+  "widget": "scaling",
+  "break": {
+    "label": "Break it",
+    "explains": "Leave the features raw. Even at the fastest safe learning rate, the loss crawls for hundreds of steps."
+  },
+  "check": {
+    "question": "Closed-form least squares gives the same predictions with or without scaling. Why scale anyway?",
+    "options": [
+      "It changes the answer a lot",
+      "Gradient descent and penalties behave better",
+      "It removes outliers"
+    ],
+    "answer": 1
+  },
+  "realLife": "Models with a penalty, distance-based models and neural networks all need it. Tree models do not.",
+  "data": "Thirty rows. Feature one is 0 to 1, feature two is 0 to 300. The target depends on both. Both runs use 90% of their own stable learning-rate limit.",
+  "maths": [
+    "z = (x − mean) / std",
+    "scikit-learn's StandardScaler divides by the population std (n, not n−1).",
+    "Fit the scaler on training data only, then reuse its mean and std on new data."
+  ],
+  "code": "from sklearn.preprocessing import StandardScaler\nfrom sklearn.pipeline import make_pipeline\nm = make_pipeline(StandardScaler(), Ridge()).fit(X_train, y_train)",
+  "sources": [
+    {
+      "title": "Let's Data Science: standardization vs normalization",
+      "url": "https://letsdatascience.com/blog/standardization-vs-normalization-a-practical-guide-to-feature-scaling",
+      "note": "elongated loss surfaces and the leakage trap"
+    },
+    {
+      "title": "howaiworks: feature scaling",
+      "url": "https://howaiworks.ai/glossary/feature-scaling",
+      "note": "why trees do not need it; population std note"
+    },
+    {
+      "title": "Sklearn linear regression guide (Kanaries)",
+      "url": "https://docs.kanaries.net/topics/Scikit-Learn/sklearn-linear-regression",
+      "note": "OLS does not need scaling, regularised models do"
+    }
+  ]
+}

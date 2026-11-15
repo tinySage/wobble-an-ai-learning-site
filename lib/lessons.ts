@@ -7,6 +7,8 @@ export interface LessonContent {
   break: { label: string; explains: string };
   check: { question: string; options: string[]; answer: number };
   realLife: string;
+  data: string; maths: string[]; code: string;
+  sources: { title: string; url: string; note: string }[];
 }
 const DIR = path.join(process.cwd(), "content", "lessons");
 

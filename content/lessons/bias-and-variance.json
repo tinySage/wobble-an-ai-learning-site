@@ -1,0 +1,49 @@
+{
+  "slug": "bias-and-variance",
+  "summary": "Split a model's error into what it gets consistently wrong and how much it shakes.",
+  "headline": "Wrong on average, or wobbly",
+  "overview": [
+    "Draw many training sets from the same world and fit the same model to each. If the fits all miss in the same way, that is bias. If they scatter, that is variance.",
+    "A stiff model has high bias and low variance. A flexible one is the reverse. Noise in the data is a floor neither can beat."
+  ],
+  "widget": "bias-variance",
+  "break": {
+    "label": "Break it",
+    "explains": "Draw new training sets. Low degrees barely change. High degrees wobble differently every time."
+  },
+  "check": {
+    "question": "Fits from different training sets scatter widely around their average. What is that?",
+    "options": [
+      "High bias",
+      "High variance",
+      "Low noise"
+    ],
+    "answer": 1
+  },
+  "realLife": "This is why more data helps flexible models: it shrinks variance without adding bias.",
+  "data": "Each bar comes from refitting on 60 fresh training sets of 14 points from the same noisy sine wave, then averaging. The size of the bars shifts with the random draw, so the total error only roughly follows a U.",
+  "maths": [
+    "expected test error = bias² + variance + noise²",
+    "bias² = mean over x of (average fit − truth)²",
+    "variance = mean over x of the spread of fits around their average",
+    "Real data has no known truth, so this split can be shown but not computed on real projects."
+  ],
+  "code": "fits = [fit(*draw_training_set()).predict(grid) for _ in range(60)]\nbias2 = np.mean((np.mean(fits, 0) - truth(grid))**2)\nvar = np.mean(np.var(fits, 0))",
+  "sources": [
+    {
+      "title": "MLU-Explain: the bias-variance tradeoff",
+      "url": "https://mlu-explain.github.io/bias-variance",
+      "note": "interactive LOESS and k-NN versions"
+    },
+    {
+      "title": "CS229 lecture notes: generalisation",
+      "url": "https://cs229.stanford.edu/main_notes.pdf",
+      "note": "decomposition for regression, double descent"
+    },
+    {
+      "title": "Univ. of Washington CSE 163",
+      "url": "https://courses.cs.washington.edu/courses/cse163/25au/bias-variance-bias-and-bias",
+      "note": "high bias vs high variance in plain terms"
+    }
+  ]
+}
