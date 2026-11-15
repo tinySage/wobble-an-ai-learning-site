@@ -10,3 +10,8 @@ export * from "./calibration.ts";
 export * from "./datasets.ts"; export * from "./classify.ts";
 export * from "./unsup.ts";
 export * from "./nn.ts";
+export * from "./seq.ts";
+export * from "./lang.ts";
+export * from "./rl.ts";
+export * from "./gen.ts";
+export * from "./trust.ts";
