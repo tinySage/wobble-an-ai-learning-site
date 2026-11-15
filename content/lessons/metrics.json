@@ -23,10 +23,8 @@
   "realLife": "A medical screening test favours recall, since a missed case is costly. A spam filter that deletes real mail favours precision.",
   "data": "Four hundred cases, half truly yes. Scores come from two overlapping bell curves, one centred at 0.40 for no and one at 0.62 for yes. The seed is fixed.",
   "maths": [
-    "precision = TP / (TP + FP)",
-    "recall = TPR = TP / (TP + FN)",
-    "FPR = FP / (FP + TN)",
-    "F1 = 2TP / (2TP + FP + FN)",
+    "$$\\text{precision}=\\frac{TP}{TP+FP}\\qquad \\text{recall}=\\frac{TP}{TP+FN}$$",
+    "$$\\mathrm{FPR}=\\frac{FP}{FP+TN}\\qquad F_1=\\frac{2TP}{2TP+FP+FN}$$",
     "AUC is the chance a random positive scores higher than a random negative."
   ],
   "code": "from sklearn.metrics import precision_score, recall_score, roc_auc_score\nprecision_score(y, s >= 0.5), recall_score(y, s >= 0.5), roc_auc_score(y, s)",

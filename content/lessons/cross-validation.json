@@ -23,9 +23,8 @@
   "realLife": "Teams that report the best of many runs ship models that quietly underperform their slide.",
   "data": "The same forty points as the last lesson, shuffled once with a fixed seed, with a degree-5 polynomial. Fold sizes follow scikit-learn's KFold rule: the first n mod k folds get one extra row.",
   "maths": [
-    "CV error = (1/k) Σ error on fold i, with the model refitted for each fold",
-    "spread = standard deviation of the k fold errors",
-    "Choosing the best of many splits adds selection bias on top of ordinary noise."
+    "$$\\mathrm{CV}=\\frac1k\\sum_{i=1}^{k}\\mathrm{err}_i$$",
+    "The model is refitted for each fold. The spread is the standard deviation of the k fold errors. Choosing the best of many splits adds selection bias on top of ordinary noise."
   ],
   "code": "from sklearn.model_selection import cross_val_score, KFold\nscores = cross_val_score(model, X, y, cv=KFold(5, shuffle=True, random_state=0))\nprint(scores.mean(), scores.std())",
   "sources": [

@@ -23,9 +23,9 @@
   "realLife": "Whatever you search with, score each trial with cross-validation, then confirm once on data you never touched.",
   "data": "A toy score surface with a narrow good region in the first setting. Grid and random each get the same number of trials. The averages are over 300 repeated random draws, with the grid fixed.",
   "maths": [
-    "trials: grid uses (values per setting)^(settings), which grows exponentially",
-    "Bergstra and Bengio found most datasets depend on only a few settings, and which few differs by dataset.",
-    "Their random search matched or beat grid-plus-manual tuning on five of seven datasets, so it is not a guaranteed win."
+    "Grid trials grow exponentially with the number of settings:",
+    "$$\\text{trials}=(\\text{values per setting})^{\\,\\text{settings}}$$",
+    "Bergstra and Bengio found most datasets depend on only a few settings, and which few differs by dataset. Their random search matched or beat grid-plus-manual tuning on five of seven datasets, so it is not a guaranteed win."
   ],
   "code": "from sklearn.model_selection import RandomizedSearchCV\nfrom scipy.stats import loguniform\nsearch = RandomizedSearchCV(model, {'C': loguniform(1e-3, 1e3)}, n_iter=20, cv=5).fit(X, y)",
   "sources": [

@@ -23,8 +23,8 @@
   "realLife": "Fraud, rare diseases and equipment failure are all imbalanced, so accuracy alone is a poor guide.",
   "data": "Four thousand cases with a share of truly-yes cases you set. Scores come from the same two bell curves as the metrics lesson. The threshold slider still applies.",
   "maths": [
-    "accuracy of always-no = 1 − prevalence",
-    "average precision = Σ (recall step) × precision, as scikit-learn defines it",
+    "$$\\text{accuracy of always-no}=1-\\text{prevalence}$$",
+    "$$\\mathrm{AP}=\\sum_n (R_n-R_{n-1})\\,P_n$$",
     "ROC AUC does not depend on prevalence, because it compares positives with negatives directly. Precision does depend on it."
   ],
   "code": "from sklearn.metrics import average_precision_score, roc_auc_score\nmodel = LogisticRegression(class_weight='balanced')\naverage_precision_score(y, p), roc_auc_score(y, p)",

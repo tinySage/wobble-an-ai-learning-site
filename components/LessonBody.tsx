@@ -2,6 +2,7 @@
 import { useState } from "react";
 import type { LessonContent } from "@/lib/lessons";
 import { markDone } from "@/lib/progress";
+import Maths from "@/components/Maths";
 
 const TABS = ["Overview", "Data", "The maths", "Code", "Sources"] as const;
 export default function LessonBody({ c }: { c: LessonContent }) {
@@ -14,7 +15,7 @@ export default function LessonBody({ c }: { c: LessonContent }) {
       <div role="tabpanel">
         {tab === "Overview" && <><h2 style={{ fontSize: 32, marginBottom: 10 }}>{c.headline}</h2>{c.overview.map((t, i) => <p key={i} style={{ margin: "0 0 10px" }}>{t}</p>)}</>}
         {tab === "Data" && <p style={{ margin: 0 }}>{c.data}</p>}
-        {tab === "The maths" && <>{c.maths.map((t, i) => <p key={i} className="mono" style={{ margin: "0 0 10px", fontSize: 14, whiteSpace: "pre-wrap" }}>{t}</p>)}</>}
+        {tab === "The maths" && <>{c.maths.map((t, i) => <Maths key={i} line={t} />)}</>}
         {tab === "Code" && <pre className="mono" style={{ margin: 0, fontSize: 13, overflowX: "auto", background: "var(--blush)", padding: 16, borderRadius: 12 }}>{c.code}</pre>}
         {tab === "Sources" && <><p className="mute" style={{ marginTop: 0 }}>Checked against more than one source before writing. Where they differ, it is noted.</p><ul style={{ paddingLeft: 18, margin: 0 }}>{c.sources.map((s) => <li key={s.url} style={{ marginBottom: 6 }}><a href={s.url} style={{ textDecoration: "underline" }}>{s.title}</a> <span className="mute">· {s.note}</span></li>)}</ul></>}
       </div>

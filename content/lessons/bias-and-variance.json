@@ -23,9 +23,8 @@
   "realLife": "This is why more data helps flexible models: it shrinks variance without adding bias.",
   "data": "Each bar comes from refitting on 60 fresh training sets of 14 points from the same noisy sine wave, then averaging. The size of the bars shifts with the random draw, so the total error only roughly follows a U.",
   "maths": [
-    "expected test error = bias² + variance + noise²",
-    "bias² = mean over x of (average fit − truth)²",
-    "variance = mean over x of the spread of fits around their average",
+    "$$\\mathbb E[\\text{test error}]=\\text{bias}^2+\\text{variance}+\\sigma^2$$",
+    "$$\\text{bias}^2=\\overline{\\big(\\bar f(x)-f(x)\\big)^2}\\qquad \\text{variance}=\\overline{\\operatorname{Var}\\big(\\hat f(x)\\big)}$$",
     "Real data has no known truth, so this split can be shown but not computed on real projects."
   ],
   "code": "fits = [fit(*draw_training_set()).predict(grid) for _ in range(60)]\nbias2 = np.mean((np.mean(fits, 0) - truth(grid))**2)\nvar = np.mean(np.var(fits, 0))",

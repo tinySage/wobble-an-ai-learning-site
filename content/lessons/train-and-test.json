@@ -23,9 +23,8 @@
   "realLife": "A model graded on its own homework passes every exam in a notebook and fails in production.",
   "data": "Forty points from a noisy sine wave. A degree-5 polynomial is fitted to the training part each time. The strip under the plot shows the test error from 40 different random splits at the chosen size.",
   "maths": [
-    "test error = mean (ŷ − y)² over held-back rows only",
-    "The model never uses test rows to choose weights, settings or features.",
-    "Smaller test sets give noisier scores. Smaller training sets give a weaker model. The split size trades one against the other."
+    "$$\\text{test error}=\\frac1m\\sum_{j\\in\\text{test}}(\\hat y_j-y_j)^2$$",
+    "The model never uses test rows to choose weights, settings or features. Smaller test sets give noisier scores. Smaller training sets give a weaker model."
   ],
   "code": "from sklearn.model_selection import train_test_split\nXtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.3, random_state=0)\nm = model.fit(Xtr, ytr)\nprint(m.score(Xte, yte))",
   "sources": [
