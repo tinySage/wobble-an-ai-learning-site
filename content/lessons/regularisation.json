@@ -1,0 +1,48 @@
+{
+  "slug": "regularisation",
+  "summary": "Charge the model for big weights and the wiggles calm down.",
+  "headline": "A price on wild curves",
+  "overview": [
+    "Ridge regression adds the squared size of the weights to the loss. A flexible curve can still fit, but only if it pays for steep swings.",
+    "Turn the penalty up from nothing and watch the degree-9 curve settle. Turn it too far and it goes flat."
+  ],
+  "widget": "regularisation",
+  "break": {
+    "label": "Break it",
+    "explains": "Keep turning the penalty up. Past a point the curve flattens and both errors rise: that is underfitting."
+  },
+  "check": {
+    "question": "What happens if the penalty is made enormous?",
+    "options": [
+      "The model fits the training data perfectly",
+      "The weights shrink toward zero and the model underfits",
+      "Test error always drops"
+    ],
+    "answer": 1
+  },
+  "realLife": "Almost every production linear model has a penalty, tuned with cross-validation.",
+  "data": "The same fourteen points as the overfitting lesson, with degree 9 as the starting point. Penalty strengths run from off to 1e0 in decades.",
+  "maths": [
+    "ridge loss = Σ (ŷ − y)² + α Σ w²",
+    "lasso loss = (1/2n) Σ (ŷ − y)² + α Σ |w|  (can set weights exactly to zero)",
+    "scikit-learn's Ridge uses a summed error, so its α is not the same size as a penalty added to a mean error. Compare the formulas before comparing numbers across sources."
+  ],
+  "code": "from sklearn.linear_model import Ridge\nm = make_pipeline(PolynomialFeatures(9), StandardScaler(), Ridge(alpha=0.1))",
+  "sources": [
+    {
+      "title": "scikit-learn: ridge and lasso",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "note": "penalised objectives as written there"
+    },
+    {
+      "title": "Kanaries sklearn guide",
+      "url": "https://docs.kanaries.net/topics/Scikit-Learn/sklearn-linear-regression",
+      "note": "scaling needed before penalising"
+    },
+    {
+      "title": "CS229 lecture notes",
+      "url": "https://cs229.stanford.edu/main_notes.pdf",
+      "note": "regularisation under generalisation"
+    }
+  ]
+}

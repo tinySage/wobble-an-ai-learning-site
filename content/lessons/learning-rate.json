@@ -1,0 +1,48 @@
+{
+  "slug": "learning-rate",
+  "summary": "Too small crawls, too big blows up. There is a hard limit in between.",
+  "headline": "The step size has a ceiling",
+  "overview": [
+    "For a bowl-shaped loss, descent is stable only when the learning rate stays below 2 divided by the steepest curvature of the bowl. The widget works that number out for this data and marks it.",
+    "Below the limit the loss falls. Above it, every step overshoots by more than it fixed."
+  ],
+  "widget": "learning-rate",
+  "break": {
+    "label": "Break it",
+    "explains": "Press the button to jump just past the limit. The loss curve turns rose and climbs."
+  },
+  "check": {
+    "question": "You double the learning rate and the loss starts growing. What is the likely cause?",
+    "options": [
+      "The data changed",
+      "The step now overshoots the minimum",
+      "The model has too few parameters"
+    ],
+    "answer": 1
+  },
+  "realLife": "Training logs that suddenly show a loss of NaN usually mean a learning rate that was too high for that data.",
+  "data": "Same sixteen points as the gradient descent lesson, so you can compare. Loss is drawn on a log scale so both slow and exploding runs fit on screen.",
+  "maths": [
+    "Near the minimum the loss is a quadratic. Along each direction the error is multiplied by (1 − η·λ) each step, where λ is the curvature.",
+    "Stable when |1 − η·λ| < 1 for every λ, i.e. η < 2 / λmax.",
+    "The Google course shows 0.03 working and 1 failing on its data. Those numbers belong to that data, not to learning rates in general."
+  ],
+  "code": "lam_max = np.linalg.eigvalsh(2/n * Z.T @ Z)[-1]   # Z = [X, 1]\nlr_limit = 2 / lam_max",
+  "sources": [
+    {
+      "title": "Google ML Crash Course: learning rate",
+      "url": "https://developers.google.com/machine-learning/crash-course/reducing-loss/learning-rate",
+      "note": "too small, too large, and divergence"
+    },
+    {
+      "title": "Google ML Crash Course: gradient descent exercise",
+      "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent-exercise",
+      "note": "rates that work and fail on one dataset"
+    },
+    {
+      "title": "CS229 lecture notes",
+      "url": "https://cs229.stanford.edu/main_notes.pdf",
+      "note": "descent can overshoot, then reverse sign"
+    }
+  ]
+}
