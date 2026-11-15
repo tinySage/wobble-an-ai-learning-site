@@ -2,7 +2,7 @@
 
 Learn machine learning by breaking it. Interactive lessons from linear regression to transformers: each one has a model you can drag and a button that makes it fail.
 
-**Live lessons: 15** (Part 1 fit and overfit, Part 3 trust the score). Parts 2, 4, 5 and 6 are planned.
+**Live lessons: 37** (Part 1 fit and overfit, Part 2 predict, Part 3 trust the score, Part 4 find structure, Part 5 neural networks). Part 6 is planned.
 
 ![Wobble home](docs/screenshots/home.png)
 
@@ -25,7 +25,7 @@ npm run build      # static export to out/
 Deploy: import the repo into Netlify. `netlify.toml` sets the build command and `out` as the publish folder.
 
 ## How it was built
-Stages, each reviewed as its own pull request: scaffold, ML engine, Part 1 lessons, Part 3 lessons, polish. `design/` holds the design canvas files the site is built from (blush and matcha).
+Stages, each reviewed as its own pull request: scaffold, ML engine, then one stage per part of lessons, then polish. `design/` holds the design canvas files the site is built from (blush and matcha).
 
 Code is released under the [MIT License](LICENSE).
 
