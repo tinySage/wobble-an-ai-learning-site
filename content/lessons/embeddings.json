@@ -1,0 +1,47 @@
+{
+  "slug": "embeddings",
+  "summary": "Turn each word into a short list of numbers so that words used in similar places end up close together.",
+  "headline": "A word is the company it keeps",
+  "overview": [
+    "Count which words appear near each other, turn the counts into pointwise mutual information that ignores negative values, and compress the result to a few numbers per word. Words that share neighbours get similar vectors. Levy and Goldberg showed that word2vec's skip-gram with negative sampling is closely related: it implicitly factorises a shifted version of the same matrix.",
+    "Neighbour lists are the reliable part. Analogies by vector arithmetic are fragile. Levy and Goldberg found the learned vectors beat plain SVD on analogies, while Arora and colleagues give a theory of why analogies can work at all. Here, with 8 numbers per word, queen and rome land in the top three but neither takes the top spot."
+  ],
+  "widget": "lab-embed",
+  "break": {
+    "label": "Break it",
+    "explains": "Give every word one number and use a tiny corpus. With one number the neighbours of a word become noise, and the analogies fail."
+  },
+  "check": {
+    "question": "What does an embedding learned from co-occurrence capture?",
+    "options": [
+      "Which words appear in similar contexts",
+      "The dictionary definition of each word",
+      "How often each word appears alone"
+    ],
+    "answer": 0
+  },
+  "realLife": "Language models begin with learned vectors for words or word pieces, and search and recommendation systems do the same for products and users.",
+  "data": "A made-up corpus of up to 400 short sentences covering animals and what they eat, capital cities and countries, and royal and everyday words, with 38 distinct words. Context window of two words either side. Real corpora are millions of times larger.",
+  "maths": [
+    "$$\\mathrm{PPMI}(w,c)=\\max\\Big(0,\\ \\log\\frac{P(w,c)}{P(w)\\,P(c)}\\Big)$$",
+    "The word vectors come from the largest eigenvalues of the PPMI matrix, each scaled by the square root of its size. Keeping k of them is the best rank-k fit in squared error: the leftover error equals the discarded eigenvalues, which the tests check exactly."
+  ],
+  "code": "from gensim.models import Word2Vec\nm = Word2Vec(sentences, vector_size=50, window=2, min_count=1, sg=1, negative=5)\nm.wv.most_similar('paris')",
+  "sources": [
+    {
+      "title": "Levy and Goldberg (2014): neural word embedding as implicit matrix factorization",
+      "url": "https://proceedings.neurips.cc/paper/2014/hash/b78666971ceae55a8e87efb7cbfd9ad4-Abstract.html",
+      "note": "skip-gram as shifted PMI factorisation; SVD vs SGNS on analogies"
+    },
+    {
+      "title": "Levy, Goldberg and Dagan (2015): lessons from word embeddings",
+      "url": "https://transacl.org/ojs/index.php/tacl/article/viewFile/570/124",
+      "note": "PPMI, SVD and context smoothing"
+    },
+    {
+      "title": "Arora et al. (2016): a latent variable model approach to word embeddings",
+      "url": "https://arxiv.org/abs/1502.03520",
+      "note": "a theory for why analogies work"
+    }
+  ]
+}

@@ -17,7 +17,7 @@ export default function Home() {
             <Link href={`/lessons/${firstLive()}/`} className="btn primary">Start learning</Link>
             <Link href="/lessons/" className="btn ghost">See all lessons</Link>
           </div>
-          <div className="mono mute" style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 13 }}><span>{liveInOrder().length} lessons live, {allPlanned().length} planned</span><span>No sign-up</span><span>Runs in your browser</span></div>
+          <div className="mono mute" style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 13 }}><span>{liveInOrder().length === allPlanned().length ? `${liveInOrder().length} lessons` : `${liveInOrder().length} lessons live, ${allPlanned().length} planned`}</span><span>No sign-up</span><span>Runs in your browser</span></div>
         </div>
         <HeroPlot />
       </section>

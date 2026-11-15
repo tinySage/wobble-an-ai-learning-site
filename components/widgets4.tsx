@@ -24,7 +24,7 @@ export const Mini = ({ series, hi, w = 300, h = 110, label }: { series: { v: num
   const all = series.flatMap((s) => s.v), lo = Math.min(...all), up = Math.max(...all), n = series[0].v.length, x = (i: number) => 14 + (i / (n - 1)) * (w - 28), y = (v: number) => h - 14 - ((v - lo) / (up - lo || 1)) * (h - 28);
   return (<svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={label} style={{ width: "100%", maxWidth: 360, height: "auto" }}>
     {series.map((s) => <g key={s.n}><polyline fill="none" stroke={s.c} strokeWidth={2} points={s.v.map((v, i) => `${x(i)},${y(v)}`).join(" ")} /><circle cx={x(hi)} cy={y(s.v[hi])} r={5} fill={s.c} /></g>)}
-    {series.map((s, i) => <text key={s.n} x={14 + i * 110} y={10} fontSize={11} fill={s.c} fontWeight={700}>{s.n}</text>)}
+    {series.map((s, i) => <text key={s.n} x={14 + i * Math.min(110, (w - 28) / series.length)} y={10} fontSize={11} fill={s.c} fontWeight={700}>{s.n}</text>)}
   </svg>);
 };
 

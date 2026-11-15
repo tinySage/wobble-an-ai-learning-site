@@ -2,7 +2,7 @@
 
 Learn machine learning by breaking it. Interactive lessons from linear regression to transformers: each one has a model you can drag and a button that makes it fail.
 
-**Live lessons: 37** (Part 1 fit and overfit, Part 2 predict, Part 3 trust the score, Part 4 find structure, Part 5 neural networks). Part 6 is planned.
+**46 lessons, all live**: fit and overfit, classify, trust the score, find structure, neural networks, and advanced (time series, HMMs, embeddings, attention, bandits and Q-learning, autoencoders, diffusion, interpretability, fairness).
 
 ![Wobble home](docs/screenshots/home.png)
 
