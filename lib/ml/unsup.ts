@@ -183,3 +183,11 @@ export function tsne(X: Pts, o: { perplexity?: number; iters?: number; seed?: nu
   return Y;
 }
 export const knnPreserved = (A: Pts, B: Pts, k = 10) => { const nn = (S: Pts, i: number) => S.map((q, j) => [d2(S[i], q), j]).filter(([, j]) => j !== i).sort((a, b) => a[0] - b[0]).slice(0, k).map(([, j]) => j); let s = 0; for (let i = 0; i < A.length; i++) { const a = new Set(nn(A, i)); s += nn(B, i).filter((j) => a.has(j)).length / k; } return s / A.length; };
+
+/** Adjusted Rand index between two labelings (1 = same grouping, about 0 = no better than chance). Noise (-1) counts as its own group. */
+export function adjustedRand(a: number[], b: number[]): number {
+  const n = a.length, tab = new Map<string, number>(), ra = new Map<number, number>(), rb = new Map<number, number>();
+  a.forEach((x, i) => { const k = x + "|" + b[i]; tab.set(k, (tab.get(k) ?? 0) + 1); ra.set(x, (ra.get(x) ?? 0) + 1); rb.set(b[i], (rb.get(b[i]) ?? 0) + 1); });
+  const c2 = (v: number) => (v * (v - 1)) / 2, s = [...tab.values()].reduce((t, v) => t + c2(v), 0), sa = [...ra.values()].reduce((t, v) => t + c2(v), 0), sb = [...rb.values()].reduce((t, v) => t + c2(v), 0), e = (sa * sb) / c2(n), m = (sa + sb) / 2;
+  return m === e ? 1 : (s - e) / (m - e);
+}

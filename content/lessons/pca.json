@@ -1,0 +1,48 @@
+{
+  "slug": "pca",
+  "realLife": "PCA compresses sensor channels, strips noise before modelling, and gives a first look at high-dimensional data.",
+  "summary": "Rotate the data so the first axis holds the most spread, then keep only the first few axes.",
+  "headline": "Find the direction that matters most",
+  "overview": [
+    "Principal component analysis finds the direction along which the data varies most, then the next direction at right angles, and so on. Keeping only the first few gives a shorter description with as little lost as possible.",
+    "PCA chases variance, and variance depends on units. A column measured in millimetres has a million times the variance of the same column in metres, so it grabs the first component."
+  ],
+  "widget": "lab-pca",
+  "break": {
+    "label": "Break it",
+    "explains": "Multiply the second feature by 1000, as if it switched units, without standardising. The first component swings to point along that column and claims nearly all the variance, though the data is unchanged."
+  },
+  "check": {
+    "question": "Why standardise columns before PCA when they use different units?",
+    "options": [
+      "Otherwise large-unit columns dominate the components",
+      "PCA cannot run without it",
+      "It makes the data linear"
+    ],
+    "answer": 0
+  },
+  "data": "One hundred and twenty points where the second feature roughly follows the first plus noise. Pressing standardise rescales each column to mean 0 and spread 1 first. Keeping one component projects every point onto the red arrow.",
+  "maths": [
+    "$$\\Sigma=\\frac{1}{n-1}\\sum_i (x_i-\\mu)(x_i-\\mu)^{\\top},\\qquad \\Sigma v_k=\\lambda_k v_k$$",
+    "$$\\text{share}_k=\\frac{\\lambda_k}{\\sum_j\\lambda_j},\\qquad z=V_k^{\\top}(x-\\mu)$$",
+    "scikit-learn centres the data but does not scale it. Whether to scale is a judgement: skip it only when columns share units and their differences in spread carry real meaning."
+  ],
+  "code": "from sklearn.decomposition import PCA\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.pipeline import make_pipeline\nm = make_pipeline(StandardScaler(), PCA(n_components=2)).fit(X)\nm[-1].explained_variance_ratio_",
+  "sources": [
+    {
+      "title": "scikit-learn: PCA",
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html",
+      "note": "input is centred but not scaled"
+    },
+    {
+      "title": "EPFL BIO-322: PCA",
+      "url": "https://bio322.epfl.ch/weeks/12/pca.html",
+      "note": "units and the first component; standardise unless units agree and spread is meaningful"
+    },
+    {
+      "title": "Chandra Source Catalog outlier search (arXiv)",
+      "url": "https://arxiv.org/pdf/2205.12908",
+      "note": "a real case where one unscaled column took over 98% of the variance"
+    }
+  ]
+}

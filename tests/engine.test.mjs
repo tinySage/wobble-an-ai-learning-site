@@ -7,7 +7,7 @@ import { standardise } from "../lib/ml/scale.ts";
 import { kFold, trainTestSplit, timeSplit, walkForward, rng } from "../lib/ml/split.ts";
 import { rocAuc, precisionRecallF1, confusion, rocCurve } from "../lib/ml/metrics.ts";
 import { fitLogistic } from "../lib/ml/logistic.ts";
-import { kmeans, silhouette, dbscan, agglomerative, fitPCA, fitGMM, tsneAffinities, tsne, knnPreserved, fitIsolation, makeHighD } from "../lib/ml/unsup.ts";
+import { kmeans, silhouette, dbscan, agglomerative, fitPCA, fitGMM, tsneAffinities, tsne, knnPreserved, fitIsolation, makeHighD, adjustedRand } from "../lib/ml/unsup.ts";
 
 const F = JSON.parse(fs.readFileSync("tests/fixtures/sklearn.json", "utf8"));
 const close = (a, b, tol, msg) => assert.ok(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)), `${msg ?? ""} got ${a}, want ${b}`);
@@ -180,4 +180,8 @@ test("isolation forest ranks planted outliers highest", () => {
   const r = rng(9), X = Array.from({ length: 200 }, () => [r(), r()]), out = [[3, 3], [-2, 2], [2.5, -1]], f = fitIsolation([...X, ...out], { seed: 2 });
   const s = out.map((q) => f.score(q)), inl = X.map((q) => f.score(q)).sort((a, b) => b - a)[10];
   assert.ok(s.every((v) => v > inl));
+});
+test("adjusted Rand index: identical groupings score 1, relabelling does not matter", () => {
+  assert.equal(adjustedRand([0, 0, 1, 1, 2, 2], [5, 5, 3, 3, 9, 9]), 1);
+  assert.ok(Math.abs(adjustedRand([0, 0, 1, 1], [0, 1, 0, 1])) < 0.6);
 });

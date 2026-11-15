@@ -1,0 +1,50 @@
+{
+  "slug": "gaussian-mixtures",
+  "realLife": "Mixtures model customer behaviour groups, speaker voices and background in video, wherever groups overlap and a soft label is more honest than a hard one.",
+  "summary": "Model the data as a blend of bell-shaped groups and let each point belong to several at once.",
+  "headline": "Soft clusters with their own shapes",
+  "overview": [
+    "A Gaussian mixture says the data came from several bell-shaped clumps. Each point gets a probability of belonging to each one, instead of a single hard label.",
+    "The expectation-maximisation loop alternates between guessing those probabilities and refitting each bell. You choose how flexible each bell is: a circle, a stretched axis-aligned ellipse, or a freely tilted ellipse."
+  ],
+  "widget": "lab-gmm",
+  "break": {
+    "label": "Break it",
+    "explains": "Give blobs 7 free-tilting components. Log-likelihood keeps climbing as the fit improves, yet BIC turns upward because extra parameters cost more than they gain."
+  },
+  "check": {
+    "question": "Why look at BIC instead of log-likelihood to choose the number of components?",
+    "options": [
+      "Likelihood always improves with more components, BIC charges for the extra parameters",
+      "BIC is faster to compute",
+      "Likelihood cannot be negative"
+    ],
+    "answer": 0
+  },
+  "data": "Blobs, unequal blobs and stretched blobs, fitted with 1 to 7 components in three covariance shapes. Starting means come from k-means. The engine matches scikit-learn's likelihood, BIC and means from the same start.",
+  "maths": [
+    "$$p(x)=\\sum_{j=1}^{k}\\pi_j\\,\\mathcal N(x\\mid\\mu_j,\\Sigma_j)$$",
+    "$$r_{ij}=\\frac{\\pi_j\\,\\mathcal N(x_i\\mid\\mu_j,\\Sigma_j)}{\\sum_l \\pi_l\\,\\mathcal N(x_i\\mid\\mu_l,\\Sigma_l)}$$",
+    "$$\\mu_j=\\frac{\\sum_i r_{ij}x_i}{\\sum_i r_{ij}},\\qquad \\pi_j=\\frac1n\\sum_i r_{ij}$$",
+    "$$\\text{BIC}=p\\ln n-2\\ln\\hat L$$",
+    "p counts free parameters. A small value is added to each covariance diagonal so a component cannot collapse onto a single point."
+  ],
+  "code": "from sklearn.mixture import GaussianMixture\nm = GaussianMixture(n_components=3, covariance_type='full', random_state=0).fit(X)\nm.bic(X), m.predict_proba(X)",
+  "sources": [
+    {
+      "title": "scikit-learn: GaussianMixture",
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html",
+      "note": "covariance types, k-means initialisation, bic and aic"
+    },
+    {
+      "title": "scikit-learn: Gaussian mixture models",
+      "url": "https://scikit-learn.org/stable/modules/mixture.html",
+      "note": "EM and model selection"
+    },
+    {
+      "title": "scikit-learn: GMM model selection example",
+      "url": "https://scikit-learn.org/stable/auto_examples/mixture/plot_gmm_selection.html",
+      "note": "choosing components and covariance shape by BIC"
+    }
+  ]
+}

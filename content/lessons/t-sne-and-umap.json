@@ -1,0 +1,54 @@
+{
+  "slug": "t-sne-and-umap",
+  "realLife": "Single-cell biology and embedding inspection lean on t-SNE and UMAP plots, which is also where they get misread most.",
+  "summary": "Squash many dimensions to a flat map that keeps neighbours together, and learn what the map cannot tell you.",
+  "headline": "A map that keeps friends close and lies about the rest",
+  "overview": [
+    "t-SNE turns distances into probabilities of being neighbours, then arranges points on a plane so that the neighbour pattern matches. It is good at showing which points belong together.",
+    "It is bad at everything else. Cluster sizes, gaps between clusters and the overall layout are not reliable. Perplexity, roughly how many neighbours each point counts, changes the picture a lot. UMAP, covered below the widget, plays a similar game with a different loss."
+  ],
+  "widget": "lab-tsne",
+  "break": {
+    "label": "Break it",
+    "explains": "Drop perplexity to 2. The map shatters real groups into small fake clumps. The size comparison shows a cluster three times wider can be drawn at nearly the same size."
+  },
+  "check": {
+    "question": "Which of these can you trust in a t-SNE plot?",
+    "options": [
+      "Which points sit near each other",
+      "How far apart two clusters are",
+      "Which cluster has more spread"
+    ],
+    "answer": 0
+  },
+  "data": "Ninety points in 8 dimensions drawn as three Gaussian groups, one tight and one wide. The widget runs exact t-SNE in your browser. It does not run UMAP: that part of the lesson is explained, not demonstrated.",
+  "maths": [
+    "$$p_{j\\mid i}=\\frac{\\exp(-\\lVert x_i-x_j\\rVert^2/2\\sigma_i^2)}{\\sum_{k\\ne i}\\exp(-\\lVert x_i-x_k\\rVert^2/2\\sigma_i^2)},\\qquad p_{ij}=\\frac{p_{j\\mid i}+p_{i\\mid j}}{2n}$$",
+    "Each σ_i is tuned so the spread of its neighbour weights matches the chosen perplexity.",
+    "$$q_{ij}=\\frac{(1+\\lVert y_i-y_j\\rVert^2)^{-1}}{\\sum_{k\\ne l}(1+\\lVert y_k-y_l\\rVert^2)^{-1}},\\qquad \\text{loss}=\\sum_{i\\ne j}p_{ij}\\log\\frac{p_{ij}}{q_{ij}}$$",
+    "Kobak and Linderman found UMAP with random starting positions preserves global layout as poorly as t-SNE does, and that t-SNE started from PCA does about as well as UMAP. Other guides still say UMAP keeps more global structure. Treat that claim as contested."
+  ],
+  "code": "from sklearn.manifold import TSNE\nY = TSNE(n_components=2, perplexity=30, init='pca', random_state=0).fit_transform(X)",
+  "sources": [
+    {
+      "title": "Distill: How to Use t-SNE Effectively",
+      "url": "https://distill.pub/2016/misread-tsne/",
+      "note": "perplexity, cluster sizes, distances, random noise"
+    },
+    {
+      "title": "Kobak and Linderman: UMAP vs t-SNE initialization",
+      "url": "https://www.biorxiv.org/content/10.1101/2019.12.19.877522v1.full.pdf",
+      "note": "global structure depends on the starting positions"
+    },
+    {
+      "title": "MetricGate: UMAP vs t-SNE",
+      "url": "https://metricgate.com/blogs/umap-vs-tsne/",
+      "note": "neither preserves global geometry; UMAP has a reusable transform"
+    },
+    {
+      "title": "Datanovia: t-SNE guide",
+      "url": "https://www.datanovia.com/learn/machine-learning/dimension-reduction/t-sne",
+      "note": "membership is meaningful, sizes and gaps are not"
+    }
+  ]
+}
