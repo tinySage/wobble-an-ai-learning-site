@@ -72,5 +72,35 @@ out["cls"] = dict(X=CX.tolist(), y=cy.tolist(), G=G.tolist(),
   tree=DecisionTreeClassifier(max_depth=3, random_state=0).fit(CX, cy).predict_proba(G)[:,1].tolist(),
   gb=GradientBoostingClassifier(n_estimators=15, learning_rate=0.3, max_depth=2, random_state=0).fit(CX, cy).predict_proba(G)[:,1].tolist(),
   svm_rbf=SVC(C=1.0, gamma=3.0).fit(CX, cy).decision_function(G).tolist(), svm_n=int(SVC(C=1.0, gamma=3.0).fit(CX, cy).n_support_.sum()))
+
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
+from sklearn.metrics import silhouette_score
+from sklearn.decomposition import PCA
+from sklearn.mixture import GaussianMixture
+from sklearn.manifold._t_sne import _joint_probabilities
+from scipy.spatial.distance import squareform, pdist
+UX = np.vstack([rng.normal([.2,.3], .06, (25,2)), rng.normal([.7,.3], .06, (25,2)), rng.normal([.5,.8], .06, (25,2))])
+init = UX[[0, 30, 55]]; km = KMeans(3, init=init, n_init=1, algorithm="lloyd").fit(UX)
+th = np.linspace(0, np.pi, 40); MN = np.vstack([np.column_stack([.3+.3*np.cos(th), .42+.22*np.sin(th)]), np.column_stack([.7-.3*np.cos(th), .58-.22*np.sin(th)])]) + rng.normal(0, .02, (80,2))
+Z5 = rng.normal(size=(100,5)) @ rng.normal(size=(5,5)); pc = PCA().fit(Z5)
+def gm(cov):
+    base = GaussianMixture(3, covariance_type=cov, random_state=0).fit(UX)
+    return base
+gms = {}
+for cv in ["full", "diag", "spherical"]:
+    mu0 = init.copy(); w0 = np.ones(3)/3
+    c0 = np.array([np.cov(UX.T) for _ in range(3)])
+    if cv == "full": p0 = np.array([np.linalg.inv(c) for c in c0])
+    elif cv == "diag": p0 = np.array([1/np.diag(c) for c in c0])
+    else: p0 = np.array([2/np.trace(c) for c in c0])
+    g = GaussianMixture(3, covariance_type=cv, tol=1e-9, max_iter=500, weights_init=w0, means_init=mu0, precisions_init=p0).fit(UX)
+    gms[cv] = dict(loglik=float(g.score(UX)*len(UX)), bic=float(g.bic(UX)), aic=float(g.aic(UX)), means=g.means_.tolist(), weights=g.weights_.tolist(), cov0=c0.tolist())
+HX = rng.normal(size=(40,6)); D2 = (squareform(pdist(HX, "sqeuclidean"))).astype(np.float32)
+Pj = squareform(_joint_probabilities(D2, 12.0, 0))
+out["unsup"] = dict(X=UX.tolist(), init=init.tolist(), km_inertia=float(km.inertia_), km_labels=km.labels_.tolist(), km_centers=km.cluster_centers_.tolist(), sil=float(silhouette_score(UX, km.labels_)),
+  moons=MN.tolist(), db=DBSCAN(eps=0.07, min_samples=4).fit(MN).labels_.tolist(),
+  agg={l: AgglomerativeClustering(3, linkage=l).fit(UX).labels_.tolist() for l in ["single","complete","average","ward"]},
+  pca_X=Z5.tolist(), pca_values=pc.explained_variance_.tolist(), pca_ratio=pc.explained_variance_ratio_.tolist(), pca_abs=np.abs(pc.components_).tolist(),
+  gmm=gms, tsne_X=HX.tolist(), tsne_P=Pj.tolist())
 json.dump(out, open("tests/fixtures/sklearn.json", "w"))
 print("ok", out["sklearn"])

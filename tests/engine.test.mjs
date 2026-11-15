@@ -7,6 +7,7 @@ import { standardise } from "../lib/ml/scale.ts";
 import { kFold, trainTestSplit, timeSplit, walkForward, rng } from "../lib/ml/split.ts";
 import { rocAuc, precisionRecallF1, confusion, rocCurve } from "../lib/ml/metrics.ts";
 import { fitLogistic } from "../lib/ml/logistic.ts";
+import { kmeans, silhouette, dbscan, agglomerative, fitPCA, fitGMM, tsneAffinities, tsne, knnPreserved, fitIsolation, makeHighD } from "../lib/ml/unsup.ts";
 
 const F = JSON.parse(fs.readFileSync("tests/fixtures/sklearn.json", "utf8"));
 const close = (a, b, tol, msg) => assert.ok(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)), `${msg ?? ""} got ${a}, want ${b}`);
@@ -135,4 +136,48 @@ test("SVM and forest behave: SMO agrees with libsvm on sign, forest beats chance
   assert.ok(Math.abs(svm.sv.length - c.svm_n) <= Math.max(6, 0.3 * c.svm_n), `support vectors ${svm.sv.length} vs ${c.svm_n}`);
   const d = makeData("moons", 160, 0.1), f = fitForest(d.X, d.y, { trees: 25 }), acc = d.X.filter((q, i) => (f.proba(q) >= 0.5 ? 1 : 0) === d.y[i]).length / 160;
   assert.ok(acc > 0.9, `forest training accuracy ${acc}`);
+});
+
+// ---- Part 4: find structure ----
+const U = F.unsup;
+const canon = (l) => { const m = new Map(); return l.map((v) => (m.has(v) ? m.get(v) : (m.set(v, m.size), m.size - 1))); };
+test("kmeans from the same start matches scikit-learn", () => {
+  const m = kmeans(U.X, 3, { init: U.init });
+  assert.ok(Math.abs(m.inertia - U.km_inertia) < 1e-9);
+  assert.deepEqual(m.labels, U.km_labels);
+});
+test("silhouette matches scikit-learn", () => assert.ok(Math.abs(silhouette(U.X, U.km_labels) - U.sil) < 1e-9));
+test("dbscan labels match scikit-learn", () => assert.deepEqual(dbscan(U.moons, 0.07, 4), U.db));
+test("agglomerative partitions match scikit-learn for every linkage", () => {
+  for (const l of ["single", "complete", "average", "ward"]) assert.deepEqual(canon(agglomerative(U.X, 3, l)), canon(U.agg[l]), l);
+});
+test("PCA variances and axes match scikit-learn", () => {
+  const p = fitPCA(U.pca_X);
+  p.values.forEach((v, i) => assert.ok(Math.abs(v - U.pca_values[i]) < 1e-8));
+  p.components.forEach((c, i) => c.forEach((v, j) => assert.ok(Math.abs(Math.abs(v) - U.pca_abs[i][j]) < 1e-6)));
+});
+test("Gaussian mixture EM matches scikit-learn (likelihood, BIC, means)", () => {
+  for (const cov of ["full", "diag", "spherical"]) {
+    const g = U.gmm[cov], m = fitGMM(U.X, 3, { cov, tol: 1e-9, maxIter: 500, init: { weights: [1 / 3, 1 / 3, 1 / 3], means: U.init, covs: g.cov0 } });
+    assert.ok(Math.abs(m.loglik - g.loglik) < 1e-4 * Math.abs(g.loglik), cov + " loglik");
+    assert.ok(Math.abs(m.bic - g.bic) < 1e-3 * Math.abs(g.bic), cov + " bic");
+    const sorted = [...m.means].sort((a, b) => a[0] - b[0]), ref = [...g.means].sort((a, b) => a[0] - b[0]);
+    sorted.forEach((c, i) => c.forEach((v, j) => assert.ok(Math.abs(v - ref[i][j]) < 1e-4)));
+  }
+});
+test("t-SNE affinities match scikit-learn", () => {
+  const P = tsneAffinities(U.tsne_X, 12);
+  let worst = 0; P.forEach((r, i) => r.forEach((v, j) => (worst = Math.max(worst, Math.abs(v - U.tsne_P[i][j])))));
+  assert.ok(worst < 1e-5, "worst " + worst);
+});
+test("t-SNE keeps true clusters together in 2D", () => {
+  const { X, truth } = makeHighD(90, 8, [0.4, 0.4, 0.4]), Y = tsne(X, { perplexity: 15, iters: 250 });
+  let same = 0, tot = 0;
+  Y.forEach((p, i) => { const nn = Y.map((q, j) => [(p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2, j]).filter(([, j]) => j !== i).sort((a, b) => a[0] - b[0]).slice(0, 8); nn.forEach(([, j]) => { tot++; if (truth[j] === truth[i]) same++; }); });
+  assert.ok(same / tot > 0.95, "purity " + same / tot);
+});
+test("isolation forest ranks planted outliers highest", () => {
+  const r = rng(9), X = Array.from({ length: 200 }, () => [r(), r()]), out = [[3, 3], [-2, 2], [2.5, -1]], f = fitIsolation([...X, ...out], { seed: 2 });
+  const s = out.map((q) => f.score(q)), inl = X.map((q) => f.score(q)).sort((a, b) => b - a)[10];
+  assert.ok(s.every((v) => v > inl));
 });
