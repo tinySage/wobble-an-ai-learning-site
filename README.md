@@ -1,6 +1,6 @@
 # Wobble
 
-**Learn machine learning by breaking it.** 46 interactive lessons, from linear regression to diffusion, plus a 3D loss landscape you can spin, poke and send flying. Every lesson is a small model you can handle and a red button that makes it fail on purpose, because the way a model fails is where the idea becomes clear.
+**Learn machine learning by breaking it.** 46 interactive lessons, from linear regression to diffusion, plus a 3D loss landscape you can spin, poke and send flying. Every lesson is a small model you can handle and a red button that makes it fail on purpose, because the way a model fails is where the idea becomes clear.Check it here: https://wobble-an-ai-learning-site-sohs.vercel.app
 
 ![Wobble home: a 3D loss landscape with a ball doing gradient descent](docs/screenshots/home.png)
 
