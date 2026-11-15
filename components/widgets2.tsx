@@ -21,17 +21,17 @@ function Lab({ cfg }: { cfg: Cfg }) {
   const extras = cfg.extra ? cfg.extra(te, f.proba) : [];
   return (<div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
     <div style={{ display: "grid", gridTemplateColumns: "minmax(0,420px) 1fr", gap: 18, alignItems: "start" }} className="lab">
-      <svg viewBox={`0 0 ${S} ${S}`} role="img" aria-label="Decision regions with training and test points" style={{ width: "100%", height: "auto", background: "#fff", borderRadius: 14, border: "1px solid var(--line)" }}>
+      <svg viewBox={`0 0 ${S} ${S}`} role="img" aria-label="Decision regions with training and test points" style={{ width: "100%", height: "auto", background: "var(--screen)", borderRadius: 0, border: "3px solid var(--ink)" }}>
         {cells.map((v, i) => <rect key={i} x={4 + (i % GW) * cs} y={4 + Math.floor(i / GW) * cs} width={cs + 0.4} height={cs + 0.4} fill={mix(v)} opacity={0.85} />)}
         {tr.X.map((q, i) => <circle key={i} cx={px(q[0])} cy={py(q[1])} r={4.8} fill={tr.y[i] ? C.matcha : C.rose} stroke="#26301F" strokeWidth={1.4} />)}
         {te.X.map((q, i) => <circle key={`t${i}`} cx={px(q[0])} cy={py(q[1])} r={4.8} fill="#fff" stroke={te.y[i] ? C.matcha : C.rose} strokeWidth={2.2} />)}
       </svg>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <Row><Stat k="train accuracy" v={`${(acc(tr) * 100).toFixed(0)}%`} /><Stat k="test accuracy" v={`${(acc(te) * 100).toFixed(0)}%`} />{f.note && <Stat k={f.note[0]} v={f.note[1]} />}{extras.map(([k, v]) => <Stat key={k} k={k} v={v} />)}</Row>
-        <div role="group" aria-label="Dataset" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{cfg.kinds.map((k) => <button key={k} className="btn" onClick={() => setKind(k)} aria-pressed={kind === k} style={{ minHeight: 44, padding: "0 16px", background: kind === k ? "var(--matcha)" : "transparent", color: kind === k ? "#fff" : "var(--ink)", borderColor: "var(--line)" }}>{k}</button>)}</div>
+        <div role="group" aria-label="Dataset" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{cfg.kinds.map((k) => <button key={k} className="px-chip" onClick={() => setKind(k)} aria-pressed={kind === k}>{k}</button>)}</div>
         <Slider label="Noise in the data" value={noise} min={0.02} max={0.2} step={0.01} onChange={setNoise} show={noise.toFixed(2)} />
         {cfg.controls.map((c) => "choices" in c
-          ? <div key={c.key} role="group" aria-label={c.label} style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{c.choices.map((o, i) => <button key={o} className="btn" onClick={() => set(c.key, i)} aria-pressed={p[c.key] === i} style={{ minHeight: 44, padding: "0 14px", background: p[c.key] === i ? "var(--matcha)" : "transparent", color: p[c.key] === i ? "#fff" : "var(--ink)", borderColor: "var(--line)" }}>{o}</button>)}</div>
+          ? <div key={c.key} role="group" aria-label={c.label} style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{c.choices.map((o, i) => <button key={o} className="px-chip" onClick={() => set(c.key, i)} aria-pressed={p[c.key] === i}>{o}</button>)}</div>
           : <Slider key={c.key} label={c.label} value={p[c.key]} min={c.min} max={c.max} step={c.step} onChange={(v) => set(c.key, v)} show={c.show(p[c.key])} />)}
         <Row><Btn kind="break" onClick={() => { if (cfg.breakTo.kind) setKind(cfg.breakTo.kind); if (cfg.breakTo.noise !== undefined) setNoise(cfg.breakTo.noise); setP({ ...p, ...(cfg.breakTo.p ?? {}) }); }}>{cfg.breakLabel}</Btn>
           <Btn onClick={() => { setKind(cfg.init.kind); setNoise(cfg.init.noise); setP(cfg.init.p); }}>Reset</Btn></Row>

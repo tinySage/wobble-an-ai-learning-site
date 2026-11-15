@@ -7,7 +7,7 @@ import { Layout, Mini, Pick, S } from "./widgets4";
 const R = [196, 65, 107], G = [88, 121, 47], GW = 36;
 const mix = (p: number) => { const t = Math.min(1, Math.max(0, p)), a = Math.abs(t - 0.5) * 2 * 0.85, c = t > 0.5 ? G : R; return `rgb(${[0, 1, 2].map((i) => Math.round(255 + (c[i] - 255) * a)).join(",")})`; };
 const px = (v: number) => 6 + v * (S - 12), py = (v: number) => S - (6 + v * (S - 12));
-const BOX: React.CSSProperties = { width: "100%", height: "auto", background: "#fff", borderRadius: 14, border: "1px solid var(--line)" };
+const BOX: React.CSSProperties = { width: "100%", height: "auto", background: "var(--screen)", borderRadius: 0, border: "3px solid var(--ink)" };
 const Dots = ({ X, y, rings }: { X: number[][]; y: number[]; rings?: boolean[] }) => <>{X.map((q, i) => <circle key={i} cx={px(q[0])} cy={py(q[1])} r={4.4} fill={y[i] ? "#58792F" : "#C4416B"} stroke={rings?.[i] ? "#26301F" : "#fff"} strokeWidth={rings?.[i] ? 2.4 : 1} />)}</>;
 const Field = ({ f }: { f: (q: number[]) => number }) => { const cs = (S - 12) / GW; return <>{Array.from({ length: GW * GW }, (_, i) => <rect key={i} x={6 + (i % GW) * cs} y={6 + Math.floor(i / GW) * cs} width={cs + 1.2} height={cs + 1.2} fill={mix(f([2 * ((i % GW) + 0.5) / GW - 1, 2 * (1 - (Math.floor(i / GW) + 0.5) / GW) - 1]))} />)}</>; };
 const split = (X: number[][], y: number[], seed = 2) => { const s = trainTestSplit(X.length, 0.3, seed); return { tr: { X: s.train.map((i) => X[i]), y: s.train.map((i) => y[i]) }, te: { X: s.test.map((i) => X[i]), y: s.test.map((i) => y[i]) } }; };
