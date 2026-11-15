@@ -1,0 +1,50 @@
+{
+  "slug": "metrics",
+  "summary": "Slide a threshold and watch precision, recall and the ROC curve trade places.",
+  "headline": "One model, many possible scores",
+  "overview": [
+    "A classifier gives each case a score. Where you draw the threshold decides who gets flagged. Raise it and you flag fewer, with more of them right. Lower it and you catch more, with more false alarms.",
+    "Precision asks how many flags were right. Recall asks how many real cases were found. The ROC curve shows every threshold at once, and AUC squeezes it into one number."
+  ],
+  "widget": "metrics",
+  "break": {
+    "label": "Break it",
+    "explains": "Flag everything. Recall hits 100%, and precision collapses to the share of cases that were positive anyway."
+  },
+  "check": {
+    "question": "You lower the threshold. What usually happens?",
+    "options": [
+      "Precision rises, recall falls",
+      "Recall rises, precision tends to fall",
+      "Both rise"
+    ],
+    "answer": 1
+  },
+  "realLife": "A medical screening test favours recall, since a missed case is costly. A spam filter that deletes real mail favours precision.",
+  "data": "Four hundred cases, half truly yes. Scores come from two overlapping bell curves, one centred at 0.40 for no and one at 0.62 for yes. The seed is fixed.",
+  "maths": [
+    "precision = TP / (TP + FP)",
+    "recall = TPR = TP / (TP + FN)",
+    "FPR = FP / (FP + TN)",
+    "F1 = 2TP / (2TP + FP + FN)",
+    "AUC is the chance a random positive scores higher than a random negative."
+  ],
+  "code": "from sklearn.metrics import precision_score, recall_score, roc_auc_score\nprecision_score(y, s >= 0.5), recall_score(y, s >= 0.5), roc_auc_score(y, s)",
+  "sources": [
+    {
+      "title": "Google ML Crash Course: accuracy, precision and recall",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall",
+      "note": "definitions and when to use each"
+    },
+    {
+      "title": "Google ML Crash Course: ROC and AUC",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc",
+      "note": "AUC as ranking probability"
+    },
+    {
+      "title": "scikit-learn: ROC with cross-validation",
+      "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_roc_crossval.html",
+      "note": "chance level and fold variation"
+    }
+  ]
+}

@@ -109,3 +109,14 @@ test("lambdaMax is the true stability limit, on raw and on standardised features
     assert.ok(bad[bad.length - 1] > bad[0] * 10, "just over the limit the loss grows");
   }
 });
+
+import { brier, reliability, averagePrecision, ece } from "../lib/ml/calibration.ts";
+test("brier, reliability bins and average precision match scikit-learn", () => {
+  const c = F.calib;
+  close(brier(c.y, c.score), c.brier, 1e-12, "brier");
+  close(averagePrecision(c.y, c.score), c.ap, 1e-12, "average precision");
+  const r = reliability(c.y, c.score, 10);
+  assert.equal(r.length, c.frac.length);
+  r.forEach((b, i) => { close(b.frac, c.frac[i], 1e-12, `frac ${i}`); close(b.mean, c.mean[i], 1e-12, `mean ${i}`); });
+  assert.ok(ece(c.y, c.score) >= 0);
+});

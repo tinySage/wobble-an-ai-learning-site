@@ -1,0 +1,53 @@
+{
+  "slug": "imbalanced-classes",
+  "summary": "When one outcome is rare, accuracy can be high for a model that finds nothing.",
+  "headline": "99% accurate and useless",
+  "overview": [
+    "If only 1 case in 100 is positive, a model that always says no is right 99% of the time and finds none of them.",
+    "Accuracy hides it. Recall, precision and the precision-recall curve show it."
+  ],
+  "widget": "imbalance",
+  "break": {
+    "label": "Break it",
+    "explains": "Drop the positive share to 1% and let the model always say no. Accuracy sits near 99% while recall is zero."
+  },
+  "check": {
+    "question": "A fraud model is 99% accurate when 1% of cases are fraud. What should you check next?",
+    "options": [
+      "Nothing, 99% is great",
+      "How many frauds it actually catches",
+      "Whether the data is balanced in the test set only"
+    ],
+    "answer": 1
+  },
+  "realLife": "Fraud, rare diseases and equipment failure are all imbalanced, so accuracy alone is a poor guide.",
+  "data": "Four thousand cases with a share of truly-yes cases you set. Scores come from the same two bell curves as the metrics lesson. The threshold slider still applies.",
+  "maths": [
+    "accuracy of always-no = 1 − prevalence",
+    "average precision = Σ (recall step) × precision, as scikit-learn defines it",
+    "ROC AUC does not depend on prevalence, because it compares positives with negatives directly. Precision does depend on it."
+  ],
+  "code": "from sklearn.metrics import average_precision_score, roc_auc_score\nmodel = LogisticRegression(class_weight='balanced')\naverage_precision_score(y, p), roc_auc_score(y, p)",
+  "sources": [
+    {
+      "title": "Google ML Crash Course: accuracy and imbalanced data",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/accuracy",
+      "note": "a 1% rare class and a model that always predicts negative"
+    },
+    {
+      "title": "Machine Learning Mastery: ROC AUC vs precision-recall",
+      "url": "https://machinelearningmastery.com/roc-auc-vs-precision-recall-for-imbalanced-data/",
+      "note": "PR AUC often reads lower than ROC AUC on skewed data, though one of its own examples shows both near 1"
+    },
+    {
+      "title": "Google ML Crash Course: ROC and AUC",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc",
+      "note": "ROC and AUC work well when classes are roughly balanced"
+    },
+    {
+      "title": "UBC CPSC 330 lecture notes",
+      "url": "https://ubc-cs.github.io/cpsc330-2025S1/_downloads/f2640d62acf4da4698745737e25ebe1c/Lec09.pdf",
+      "note": "under-sampling, over-sampling and class weights"
+    }
+  ]
+}
