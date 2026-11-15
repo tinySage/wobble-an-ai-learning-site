@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Widget } from "@/components/widgets";
+import WidgetRouter from "@/components/WidgetRouter";
 import LessonBody from "@/components/LessonBody";
 import Chrome from "@/components/Chrome";
 import { PARTS, isLive, lessonMeta, liveSlugs, loadLesson } from "@/lib/lessons";
@@ -27,7 +27,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
             <span className="eyebrow mute">Lesson {m.index} of {m.total} · {m.verb}</span>
             <h1 style={{ fontSize: "clamp(44px,6vw,64px)", marginTop: 6 }}>{m.title}</h1>
           </header>
-          <div className="card" style={{ padding: 18 }}><Widget name={c.widget} /></div>
+          <div className="card" style={{ padding: 18 }}><WidgetRouter name={c.widget} /></div>
           <LessonBody c={c} />
         </article>
       </div>

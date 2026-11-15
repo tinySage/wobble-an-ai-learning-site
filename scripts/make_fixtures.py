@@ -54,5 +54,10 @@ def gdm(lr, steps):
     return losses
 lmax = float(np.linalg.eigvalsh(H)[-1])
 out["multi"] = dict(X=MX.tolist(), y=my.tolist(), lmax=lmax, lr=0.5/lmax, losses=gdm(0.5/lmax, 40), div_lr=1.2*2/lmax, div_losses=gdm(1.2*2/lmax, 40), ok_lr=0.95*2/lmax, ok_losses=gdm(0.95*2/lmax, 40))
+from sklearn.metrics import brier_score_loss, average_precision_score
+from sklearn.calibration import calibration_curve
+cy = (rng.uniform(size=300) < 0.2).astype(int); cs = np.clip(cy*0.3 + rng.normal(0.2, 0.2, 300), 0.001, 0.999)
+fp_, mp_ = calibration_curve(cy, cs, n_bins=10, strategy="uniform")
+out["calib"] = dict(y=cy.tolist(), score=cs.tolist(), brier=float(brier_score_loss(cy, cs)), ap=float(average_precision_score(cy, cs)), frac=fp_.tolist(), mean=mp_.tolist())
 json.dump(out, open("tests/fixtures/sklearn.json", "w"))
 print("ok", out["sklearn"])
