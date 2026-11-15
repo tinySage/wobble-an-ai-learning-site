@@ -1,0 +1,48 @@
+{
+  "slug": "multilayer-networks",
+  "realLife": "Credit-risk, demand and sensor models often use small fully connected networks on tabular inputs.",
+  "summary": "Stack neurons in layers with a bend between them and the model can draw curved boundaries.",
+  "headline": "Layers turn lines into curves",
+  "overview": [
+    "A hidden layer feeds the outputs of several simple neurons into the next one. With a bend, an activation function, between layers, the network can combine straight cuts into curved regions.",
+    "Without that bend, any number of layers collapses back into a single straight line. Width and depth decide how flexible the curve can be."
+  ],
+  "widget": "lab-mlp",
+  "break": {
+    "label": "Break it",
+    "explains": "Remove every hidden layer and ask for two concentric rings. What is left is one straight line, so accuracy stays near a coin flip however long you train."
+  },
+  "check": {
+    "question": "Why do hidden layers need a nonlinear activation?",
+    "options": [
+      "Without one, stacked layers equal a single linear model",
+      "It makes training faster",
+      "It removes the need for data"
+    ],
+    "answer": 0
+  },
+  "data": "One hundred and sixty points from four shapes, centred to the range -1 to 1, split 70/30. Training uses Adam at a fixed learning rate. Results depend on the random start, so a different seed can shift the numbers a little.",
+  "maths": [
+    "$$h^{(1)}=\\phi\\big(W^{(1)}x+b^{(1)}\\big),\\qquad h^{(2)}=\\phi\\big(W^{(2)}h^{(1)}+b^{(2)}\\big),\\qquad p=\\sigma\\big(w^{\\top}h^{(2)}+b\\big)$$",
+    "$$\\text{loss}=-\\frac1n\\sum_i\\big[y_i\\log p_i+(1-y_i)\\log(1-p_i)\\big]$$",
+    "If φ is the identity, then W⁽²⁾W⁽¹⁾ is just another matrix and the network is a linear classifier again. The nonlinearity is what makes depth useful."
+  ],
+  "code": "from sklearn.neural_network import MLPClassifier\nm = MLPClassifier(hidden_layer_sizes=(8, 8), activation='tanh', max_iter=2000, random_state=0).fit(X, y)",
+  "sources": [
+    {
+      "title": "Stanford CS231n lecture 4: neural networks",
+      "url": "https://cs231n.Stanford.edu/slides/2024/lecture_4.pdf",
+      "note": "why the max operator matters: otherwise a linear classifier again"
+    },
+    {
+      "title": "Neural Networks course: the XOR problem",
+      "url": "https://bnaskrecki.faculty.wmi.amu.edu.pl/nnets/_build/html/_sources/part3_limitations/ch08_xor_problem.ipynb",
+      "note": "14 of 16 two-input Boolean functions are linearly separable, XOR is not"
+    },
+    {
+      "title": "Understanding XOR with a perceptron (Univ. of Washington)",
+      "url": "https://courses.cs.washington.edu/courses/cse415/01sp/slides/Neural/tsld010.htm",
+      "note": "what a single layer cannot learn"
+    }
+  ]
+}

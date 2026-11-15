@@ -1,0 +1,49 @@
+{
+  "slug": "backpropagation",
+  "realLife": "Deep-learning libraries do this automatically, but the check is still how people test custom layers and loss functions.",
+  "summary": "Work out how much every weight contributed to the error by passing blame backwards through the chain rule.",
+  "headline": "Blame, passed backwards",
+  "overview": [
+    "The forward pass turns inputs into a prediction and a loss. The backward pass starts from the loss and uses the chain rule to ask, layer by layer, how much each weight pushed the loss up or down.",
+    "Backprop is easy to get subtly wrong and still produce numbers. The nudge test compares each slope against the loss change when that single weight is moved a hair. Agreement to about six digits means the maths is right."
+  ],
+  "widget": "lab-backprop",
+  "break": {
+    "label": "Break it",
+    "explains": "Leave out the activation slope in the backward pass. The slopes still look like plausible numbers, but they disagree with the nudge test, which is exactly how this class of bug gets caught."
+  },
+  "check": {
+    "question": "What does a gradient check compare?",
+    "options": [
+      "Backprop slopes against loss changes from tiny weight nudges",
+      "Training loss against test loss",
+      "Two different optimisers"
+    ],
+    "answer": 0
+  },
+  "data": "A 2-6-6-1 tanh network and 100 points from two moons. The table compares analytic slopes with central differences at the starting weights. Training curves use Adam with the chosen gradients.",
+  "maths": [
+    "$$\\frac{\\partial\\,\\text{loss}}{\\partial z^{(L)}}=p-y\\qquad(\\text{sigmoid with cross-entropy})$$",
+    "$$\\delta^{(l)}=\\big(W^{(l+1)\\top}\\delta^{(l+1)}\\big)\\odot\\phi'\\big(z^{(l)}\\big),\\qquad \\frac{\\partial\\,\\text{loss}}{\\partial W^{(l)}}=\\delta^{(l)}\\,a^{(l-1)\\top}$$",
+    "$$\\frac{\\partial L}{\\partial w}\\approx\\frac{L(w+h)-L(w-h)}{2h}$$",
+    "The sigmoid-plus-cross-entropy pairing makes the first term collapse to p minus y, which is why that pairing is so common. The engine's gradients match an independent numpy implementation to 1e-9."
+  ],
+  "code": "import torch\nloss = torch.nn.functional.binary_cross_entropy_with_logits(model(x), y)\nloss.backward()   # fills .grad for every weight\ntorch.autograd.gradcheck(fn, inputs)",
+  "sources": [
+    {
+      "title": "Stanford CS231n: backprop section slides (2026)",
+      "url": "https://cs231n.stanford.edu/slides/2026/section_2_backprop.pdf",
+      "note": "local gradients, the shape rule, sigmoid trick"
+    },
+    {
+      "title": "Stanford CS231n lecture 4",
+      "url": "https://cs231n.Stanford.edu/slides/2024/lecture_4.pdf",
+      "note": "analytic gradients are fast but error-prone, so check against numerical ones"
+    },
+    {
+      "title": "aman.ai: CS231n notes on neural nets and backprop",
+      "url": "https://aman.ai/cs231n/neuralnets-and-backprop/",
+      "note": "branching and vectorised backprop"
+    }
+  ]
+}

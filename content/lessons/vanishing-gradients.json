@@ -1,0 +1,50 @@
+{
+  "slug": "vanishing-gradients",
+  "realLife": "This is why very deep networks need ReLU-style activations, careful initialisation and skip connections, as in ResNets.",
+  "summary": "In a deep stack of squashing layers the learning signal shrinks to nothing before it reaches the start.",
+  "headline": "The signal that fades before it arrives",
+  "overview": [
+    "Backprop multiplies one slope per layer. The sigmoid's slope is never above 0.25, so across many layers the product collapses and the earliest layers barely learn.",
+    "Cures work at different points: activations that do not squash, starting weights scaled to keep signals steady, and skip connections that give the gradient a shortcut. None is a complete fix alone, and the widget shows each failing in its own way."
+  ],
+  "widget": "lab-vanish",
+  "break": {
+    "label": "Break it",
+    "explains": "Use 12 sigmoid layers. The first layer's gradient falls many orders of magnitude below the last layer's, and the loss stays pinned near its starting value."
+  },
+  "check": {
+    "question": "Why does a deep sigmoid network struggle to train its early layers?",
+    "options": [
+      "Its slope is at most 0.25, so many layers multiply the gradient toward zero",
+      "Sigmoid cannot output zero",
+      "Early layers have fewer weights"
+    ],
+    "answer": 0
+  },
+  "data": "A narrow network of 8 units per layer on two moons, trained 150 steps with SGD. Bars show the gradient size at each layer for the starting weights. Skip connections add each layer's input to its output wherever the sizes match. Results vary with the random start.",
+  "maths": [
+    "$$\\frac{\\partial L}{\\partial h^{(1)}}=\\frac{\\partial L}{\\partial h^{(D)}}\\prod_{l=2}^{D}W^{(l)\\top}\\operatorname{diag}\\big(\\phi'(z^{(l)})\\big)$$",
+    "$$0.25^{20}<10^{-12}$$",
+    "$$\\text{He: }\\ \\operatorname{Var}(W)=\\frac{2}{n_{\\text{in}}},\\qquad \\text{Xavier: }\\ \\operatorname{Var}(W)=\\frac{2}{n_{\\text{in}}+n_{\\text{out}}}$$",
+    "$$h_{l+1}=h_l+F(h_l)\\ \\Rightarrow\\ \\frac{\\partial h_{l+1}}{\\partial h_l}=I+\\frac{\\partial F}{\\partial h_l}$$",
+    "ReLU removes the squashing but not the effect of poorly scaled weights, so a ReLU network with bad starting weights can still fail."
+  ],
+  "code": "import torch.nn as nn\nlayer = nn.Linear(256, 256)\nnn.init.kaiming_normal_(layer.weight, nonlinearity='relu')   # He initialisation",
+  "sources": [
+    {
+      "title": "Ultralytics glossary: vanishing gradient",
+      "url": "https://www.ultralytics.com/glossary/vanishing-gradient",
+      "note": "0.25 bound, residual shortcuts, He and Xavier"
+    },
+    {
+      "title": "MetricGate: vanishing vs exploding gradients",
+      "url": "https://metricgate.com/blogs/vanishing-vs-exploding-gradient-problem/",
+      "note": "ReLU does not eliminate the problem, bad initialisation still breaks it"
+    },
+    {
+      "title": "TheoremPath: gradient flow",
+      "url": "https://theorempath.com/topics/gradient-flow-and-vanishing-gradients",
+      "note": "Jacobian product view, dead neurons, normalisation"
+    }
+  ]
+}
