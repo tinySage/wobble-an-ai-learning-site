@@ -7,3 +7,4 @@ export * from "./metrics.ts";
 export * from "./logistic.ts";
 export * from "./biasvar.ts";
 export * from "./calibration.ts";
+export * from "./datasets.ts"; export * from "./classify.ts";

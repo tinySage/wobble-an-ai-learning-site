@@ -1,0 +1,48 @@
+{
+  "slug": "naive-bayes",
+  "realLife": "Spam filters have long used naive Bayes because it is fast and accurate enough, even though its percentages are rough.",
+  "summary": "Multiply simple per-feature evidence as if features did not influence each other.",
+  "headline": "Fast, simple and overconfident",
+  "overview": [
+    "Naive Bayes estimates how each feature looks within each class, then multiplies those pieces together. The word naive is the assumption that features are independent once the class is known.",
+    "It often classifies well. Its probabilities are another matter: duplicated evidence gets counted again and again."
+  ],
+  "widget": "lab-bayes",
+  "break": {
+    "label": "Break it",
+    "explains": "Copy the first feature eight times. Nothing new was learned, yet the model becomes far more confident while accuracy barely changes."
+  },
+  "check": {
+    "question": "Why do copied features make naive Bayes overconfident?",
+    "options": [
+      "It counts the same evidence repeatedly",
+      "It runs out of data",
+      "It switches to a different formula"
+    ],
+    "answer": 0
+  },
+  "data": "Two numeric features per point and a Gaussian model for each feature within each class. The slider copies feature one, standing in for correlated columns.",
+  "maths": [
+    "$$P(y\\mid x)\\;\\propto\\;P(y)\\prod_i P(x_i\\mid y)$$",
+    "$$P(x_i\\mid y)=\\frac1{\\sqrt{2\\pi\\sigma_y^2}}\\exp\\!\\Big(-\\frac{(x_i-\\mu_y)^2}{2\\sigma_y^2}\\Big)$$",
+    "Each copy of a feature adds another identical factor, which pushes the product toward 0 or 1."
+  ],
+  "code": "from sklearn.naive_bayes import GaussianNB\nm = GaussianNB().fit(X, y)\nm.predict_proba(X_new)",
+  "sources": [
+    {
+      "title": "scikit-learn: naive Bayes",
+      "url": "https://scikit-learn.org/stable/modules/naive_bayes.html",
+      "note": "independence assumption; a decent classifier but a bad probability estimator"
+    },
+    {
+      "title": "scikit-learn: calibration curves",
+      "url": "https://scikit-learn.org/stable/auto_examples/calibration/plot_calibration_curve.html",
+      "note": "redundant features make GaussianNB overconfident"
+    },
+    {
+      "title": "iTechGuides: naive Bayes overview",
+      "url": "https://www.itechguides.com/?p=420096",
+      "note": "correlated features and overconfident output"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "slug": "gradient-boosting",
+  "realLife": "Gradient-boosted trees win many tabular-data competitions and power a lot of production ranking and risk models.",
+  "summary": "Build trees one at a time, each fixing the mistakes of the ones before.",
+  "headline": "Each tree repairs the last one",
+  "overview": [
+    "Boosting starts with a rough guess, measures what is still wrong, and fits a small tree to that remaining error. The tree's output is added in a small step. Repeat.",
+    "Each round improves the fit on training data, so too many rounds or too large a step will start fitting noise."
+  ],
+  "widget": "lab-boosting",
+  "break": {
+    "label": "Break it",
+    "explains": "Use many rounds, a big learning rate and noisy data. Training accuracy climbs while the boundary gets fussy."
+  },
+  "check": {
+    "question": "What does a smaller learning rate do?",
+    "options": [
+      "Shrinks each tree's contribution, so more rounds are needed",
+      "Removes noise from the data",
+      "Makes trees deeper"
+    ],
+    "answer": 0
+  },
+  "data": "Small depth-2 trees, binary log loss. Each tree fits the residuals, and leaf values come from a Newton step, as in scikit-learn.",
+  "maths": [
+    "$$F_m(x)=F_{m-1}(x)+\\eta\\,h_m(x)$$",
+    "$$r_i=y_i-p_i,\\qquad \\text{leaf value}=\\frac{\\sum r_i}{\\sum p_i(1-p_i)}$$",
+    "$$p=\\sigma\\big(F_m(x)\\big)$$",
+    "η is the learning rate, also called shrinkage."
+  ],
+  "code": "from sklearn.ensemble import GradientBoostingClassifier\nm = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=2).fit(X, y)",
+  "sources": [
+    {
+      "title": "scikit-learn: gradient-boosted trees",
+      "url": "https://scikit-learn.org/stable/modules/ensemble.html",
+      "note": "generalises boosting to any differentiable loss; shrinkage via learning rate"
+    },
+    {
+      "title": "scikit-learn: ensemble methods, older version",
+      "url": "https://scikit-learn.sourceforge.net/0.13/modules/ensemble.html",
+      "note": "boosting as sequential and hard to parallelise"
+    },
+    {
+      "title": "Machine Learning Mastery: decision tree failures",
+      "url": "https://machinelearningmastery.com/why-decision-trees-fail-and-how-to-fix-them/",
+      "note": "depth and leaf constraints still apply"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "slug": "logistic-regression",
+  "realLife": "Credit and medical risk scores are often logistic regressions, valued because each weight can be read and explained.",
+  "summary": "Squash a straight-line score into a probability, then draw the boundary where it hits 50%.",
+  "headline": "A line that speaks in probabilities",
+  "overview": [
+    "Logistic regression takes the same weighted sum as linear regression and pushes it through an S-shaped curve, so the output is a probability between 0 and 1. The 50% contour is a straight line.",
+    "Its penalty strength matters a lot. With no penalty on cleanly separable data, the weights keep growing because the loss can always get a little smaller."
+  ],
+  "widget": "lab-logistic",
+  "break": {
+    "label": "Break it",
+    "explains": "Make the two groups almost perfectly separable and remove the penalty. The weight size jumps, and the model becomes extremely sure everywhere."
+  },
+  "check": {
+    "question": "Why does logistic regression need a penalty on its weights?",
+    "options": [
+      "Without one, loss can keep falling as weights grow",
+      "It cannot fit without it",
+      "It makes the line curved"
+    ],
+    "answer": 0
+  },
+  "data": "One hundred and sixty points in two groups, split 70/30. Filled dots trained the model, rings were held back. Weight size is the length of the weight vector.",
+  "maths": [
+    "$$p(y=1\\mid x)=\\sigma(w^{\\top}x+b),\\qquad \\sigma(z)=\\frac1{1+e^{-z}}$$",
+    "$$\\text{log loss}=-\\frac1n\\sum_i\\big[y_i\\log p_i+(1-y_i)\\log(1-p_i)\\big]$$",
+    "$$\\text{objective}=\\sum_i \\text{log loss}_i+\\frac1{2C}\\lVert w\\rVert^2$$",
+    "scikit-learn's C is the inverse of the penalty, so a bigger C means a weaker penalty. The intercept is not penalised."
+  ],
+  "code": "from sklearn.linear_model import LogisticRegression\nm = LogisticRegression(C=1.0).fit(X, y)\nm.predict_proba(X_new)[:, 1]",
+  "sources": [
+    {
+      "title": "Google ML Crash Course: logistic regression loss and regularisation",
+      "url": "https://developers.google.com/machine-learning/crash-course/logistic-regression/model-training",
+      "note": "log loss, why regularisation matters, early stopping"
+    },
+    {
+      "title": "scikit-learn: linear models",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "note": "penalised objective and the C convention"
+    },
+    {
+      "title": "MLU-Explain: visual essays",
+      "url": "https://mlu-explain.github.io",
+      "note": "interactive logistic regression"
+    }
+  ]
+}

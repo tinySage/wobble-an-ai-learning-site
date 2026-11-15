@@ -59,5 +59,18 @@ from sklearn.calibration import calibration_curve
 cy = (rng.uniform(size=300) < 0.2).astype(int); cs = np.clip(cy*0.3 + rng.normal(0.2, 0.2, 300), 0.001, 0.999)
 fp_, mp_ = calibration_curve(cy, cs, n_bins=10, strategy="uniform")
 out["calib"] = dict(y=cy.tolist(), score=cs.tolist(), brier=float(brier_score_loss(cy, cs)), ap=float(average_precision_score(cy, cs)), frac=fp_.tolist(), mean=mp_.tolist())
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.svm import SVC
+CX = np.vstack([rng.normal([.3,.35], .12, (40,2)), rng.normal([.65,.62], .12, (40,2))]); cy = np.array([0]*40 + [1]*40)
+gx, gy = np.meshgrid(np.linspace(0,1,15), np.linspace(0,1,15)); G = np.column_stack([gx.ravel(), gy.ravel()])
+out["cls"] = dict(X=CX.tolist(), y=cy.tolist(), G=G.tolist(),
+  knn=KNeighborsClassifier(5).fit(CX, cy).predict_proba(G)[:,1].tolist(),
+  nb=GaussianNB().fit(CX, cy).predict_proba(G)[:,1].tolist(),
+  tree=DecisionTreeClassifier(max_depth=3, random_state=0).fit(CX, cy).predict_proba(G)[:,1].tolist(),
+  gb=GradientBoostingClassifier(n_estimators=15, learning_rate=0.3, max_depth=2, random_state=0).fit(CX, cy).predict_proba(G)[:,1].tolist(),
+  svm_rbf=SVC(C=1.0, gamma=3.0).fit(CX, cy).decision_function(G).tolist(), svm_n=int(SVC(C=1.0, gamma=3.0).fit(CX, cy).n_support_.sum()))
 json.dump(out, open("tests/fixtures/sklearn.json", "w"))
 print("ok", out["sklearn"])
