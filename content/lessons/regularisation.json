@@ -23,9 +23,9 @@
   "realLife": "Almost every production linear model has a penalty, tuned with cross-validation.",
   "data": "The same fourteen points as the overfitting lesson, with degree 9 as the starting point. Penalty strengths run from off to 1e0 in decades.",
   "maths": [
-    "ridge loss = Σ (ŷ − y)² + α Σ w²",
-    "lasso loss = (1/2n) Σ (ŷ − y)² + α Σ |w|  (can set weights exactly to zero)",
-    "scikit-learn's Ridge uses a summed error, so its α is not the same size as a penalty added to a mean error. Compare the formulas before comparing numbers across sources."
+    "$$L_{\\text{ridge}}=\\sum_i(\\hat y_i-y_i)^2+\\alpha\\sum_j w_j^2$$",
+    "$$L_{\\text{lasso}}=\\frac1{2n}\\sum_i(\\hat y_i-y_i)^2+\\alpha\\sum_j |w_j|$$",
+    "Lasso can set weights exactly to zero. scikit-learn's Ridge uses a summed error, so its α is not the same size as a penalty added to a mean error. Compare the formulas before comparing numbers across sources."
   ],
   "code": "from sklearn.linear_model import Ridge\nm = make_pipeline(PolynomialFeatures(9), StandardScaler(), Ridge(alpha=0.1))",
   "sources": [

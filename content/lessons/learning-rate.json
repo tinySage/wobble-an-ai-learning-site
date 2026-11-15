@@ -23,8 +23,10 @@
   "realLife": "Training logs that suddenly show a loss of NaN usually mean a learning rate that was too high for that data.",
   "data": "Same sixteen points as the gradient descent lesson, so you can compare. Loss is drawn on a log scale so both slow and exploding runs fit on screen.",
   "maths": [
-    "Near the minimum the loss is a quadratic. Along each direction the error is multiplied by (1 − η·λ) each step, where λ is the curvature.",
-    "Stable when |1 − η·λ| < 1 for every λ, i.e. η < 2 / λmax.",
+    "Near the minimum the loss is a quadratic. Along each direction the error is multiplied by this each step, where λ is the curvature:",
+    "$$1-\\eta\\lambda$$",
+    "Stable when this holds for every λ:",
+    "$$|1-\\eta\\lambda|<1\\iff \\eta<\\frac{2}{\\lambda_{\\max}}$$",
     "The Google course shows 0.03 working and 1 failing on its data. Those numbers belong to that data, not to learning rates in general."
   ],
   "code": "lam_max = np.linalg.eigvalsh(2/n * Z.T @ Z)[-1]   # Z = [X, 1]\nlr_limit = 2 / lam_max",

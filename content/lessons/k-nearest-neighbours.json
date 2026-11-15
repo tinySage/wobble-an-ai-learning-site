@@ -1,0 +1,48 @@
+{
+  "slug": "k-nearest-neighbours",
+  "realLife": "kNN is a strong baseline when similar cases really have similar answers, such as recommending songs near one you liked.",
+  "summary": "Classify a point by a vote among its closest neighbours.",
+  "headline": "You are like your neighbours",
+  "overview": [
+    "To classify a point, find the k closest training points and take a vote. There is no training step, just stored examples.",
+    "Small k follows every wiggle, including noise. Large k smooths so much that it washes out real structure."
+  ],
+  "widget": "lab-knn",
+  "break": {
+    "label": "Break it",
+    "explains": "Set k to 1 on noisy data. Every training point gets its own island, so training accuracy is perfect and test accuracy suffers."
+  },
+  "check": {
+    "question": "What happens at k = 1?",
+    "options": [
+      "The boundary is smooth",
+      "Each point copies its single nearest neighbour, including noise",
+      "The model ignores the data"
+    ],
+    "answer": 1
+  },
+  "data": "Moons, blobs or rings, with noise you control. Distances are plain Euclidean on raw x and y, so features of very different scales would need scaling first.",
+  "maths": [
+    "$$\\hat p(x)=\\frac1k\\sum_{i\\in N_k(x)}y_i$$",
+    "N_k(x) is the set of k nearest training points. Ties between equally distant points depend on data order, as scikit-learn's docs warn.",
+    "As dimensions grow, nearest and farthest points become almost equally far, which weakens the idea of nearness."
+  ],
+  "code": "from sklearn.neighbors import KNeighborsClassifier\nm = KNeighborsClassifier(n_neighbors=7).fit(X, y)",
+  "sources": [
+    {
+      "title": "scikit-learn: nearest neighbors",
+      "url": "https://scikit-learn.org/stable/modules/neighbors.html",
+      "note": "larger k suppresses noise but blurs the boundary; ties depend on order"
+    },
+    {
+      "title": "howaiworks: k-nearest neighbors",
+      "url": "https://howaiworks.ai/glossary/k-nearest-neighbors",
+      "note": "k as a bias-variance dial; sqrt(n) is a starting point, not a law"
+    },
+    {
+      "title": "Let's Data Science: KNN guide",
+      "url": "https://letsdatascience.com/blog/k-nearest-neighbors-the-definitive-guide-to-distance-based-learning",
+      "note": "scaling and weighted voting"
+    }
+  ]
+}

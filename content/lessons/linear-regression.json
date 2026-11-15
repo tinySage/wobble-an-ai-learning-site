@@ -23,9 +23,9 @@
   "realLife": "House-price models are often fit on log prices partly so a few mansions do not drag the line.",
   "data": "Ten points that follow a gentle upward trend with a little noise. Click the plot to add more. Nothing is hidden: the same points feed the fit you see.",
   "maths": [
-    "prediction   ŷ = w·x + b",
-    "loss         MSE = (1/n) Σ (ŷᵢ − yᵢ)²",
-    "best w, b    solve the normal equations XᵀX θ = Xᵀy",
+    "$$\\hat y = w x + b$$",
+    "$$\\mathrm{MSE}=\\frac1n\\sum_i(\\hat y_i-y_i)^2$$",
+    "$$X^{\\top}X\\,\\theta = X^{\\top}y$$",
     "In practice the solver uses a QR factorisation instead of inverting XᵀX, which is steadier numerically."
   ],
   "code": "from sklearn.linear_model import LinearRegression\nm = LinearRegression().fit(X, y)\nprint(m.coef_, m.intercept_)",

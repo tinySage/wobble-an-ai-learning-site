@@ -1,0 +1,48 @@
+{
+  "slug": "decision-trees",
+  "realLife": "Shallow trees are popular where people must follow the rules, such as triage or loan approval checklists.",
+  "summary": "Ask one yes-or-no question about one feature at a time until the groups are pure.",
+  "headline": "Twenty questions, learned from data",
+  "overview": [
+    "A tree picks the single split that makes the two sides as pure as possible, then repeats inside each side. The result is a patchwork of rectangles.",
+    "Left alone a tree keeps splitting until every point is alone in its box. That fits the training data perfectly and the noise with it."
+  ],
+  "widget": "lab-tree",
+  "break": {
+    "label": "Break it",
+    "explains": "Grow to depth 12 on noisy data. Training accuracy reaches 100% by memorising stray points, and the picture fills with tiny islands."
+  },
+  "check": {
+    "question": "What does limiting the maximum depth do?",
+    "options": [
+      "Raises variance",
+      "Reduces overfitting by allowing fewer splits",
+      "Changes the classes"
+    ],
+    "answer": 1
+  },
+  "data": "Moons, blobs, XOR or rings. Splits are chosen by Gini impurity at the midpoint between neighbouring values. Depth reached can be lower than the limit when boxes become pure.",
+  "maths": [
+    "$$G=2p(1-p)$$",
+    "$$\\text{split score}=n_L\\,G_L+n_R\\,G_R\\quad(\\text{lower is better})$$",
+    "The search is greedy: each split is the best on its own, which does not guarantee the best tree overall."
+  ],
+  "code": "from sklearn.tree import DecisionTreeClassifier\nm = DecisionTreeClassifier(max_depth=3).fit(X, y)",
+  "sources": [
+    {
+      "title": "scikit-learn: decision trees",
+      "url": "https://scikit-learn.org/stable/modules/tree.html",
+      "note": "overfitting, instability, XOR, and max_depth as the control"
+    },
+    {
+      "title": "Machine Learning Mastery: why decision trees fail",
+      "url": "https://machinelearningmastery.com/why-decision-trees-fail-and-how-to-fix-them/",
+      "note": "constraining depth and leaf size"
+    },
+    {
+      "title": "MLU-Explain: visual essays",
+      "url": "https://mlu-explain.github.io",
+      "note": "entropy, information gain and why going too deep is a problem"
+    }
+  ]
+}

@@ -23,8 +23,9 @@
   "realLife": "Neural networks have no closed-form answer, so every one of them is trained this way, usually on small batches.",
   "data": "Sixteen points around a rising line, with x between 0 and 1. The run stops after 80 steps.",
   "maths": [
-    "update   w ← w − η · ∂L/∂w     b ← b − η · ∂L/∂b",
-    "for MSE  ∂L/∂w = (2/n) Σ (ŷᵢ − yᵢ) xᵢ     ∂L/∂b = (2/n) Σ (ŷᵢ − yᵢ)",
+    "$$w \\leftarrow w-\\eta\\,\\frac{\\partial L}{\\partial w}\\qquad b \\leftarrow b-\\eta\\,\\frac{\\partial L}{\\partial b}$$",
+    "For mean squared error:",
+    "$$\\frac{\\partial L}{\\partial w}=\\frac2n\\sum_i(\\hat y_i-y_i)x_i\\qquad \\frac{\\partial L}{\\partial b}=\\frac2n\\sum_i(\\hat y_i-y_i)$$",
     "η is the learning rate."
   ],
   "code": "w, b = 0.0, 0.0\nfor _ in range(80):\n    e = w*x + b - y\n    w -= lr * 2*np.mean(e*x)\n    b -= lr * 2*np.mean(e)",

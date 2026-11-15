@@ -120,3 +120,19 @@ test("brier, reliability bins and average precision match scikit-learn", () => {
   r.forEach((b, i) => { close(b.frac, c.frac[i], 1e-12, `frac ${i}`); close(b.mean, c.mean[i], 1e-12, `mean ${i}`); });
   assert.ok(ece(c.y, c.score) >= 0);
 });
+
+import { knnProba, fitGaussianNB, fitTree, treeProba, fitBoost, fitSVM, fitForest, makeData } from "../lib/ml/index.ts";
+test("kNN, naive Bayes, tree and boosting match scikit-learn on a grid", () => {
+  const c = F.cls, agree = (got, want, tol) => got.filter((v, i) => Math.abs(v - want[i]) <= tol).length / got.length;
+  assert.equal(agree(c.G.map((q) => knnProba(c.X, c.y, q, 5)), c.knn, 1e-12), 1, "knn");
+  const nb = fitGaussianNB(c.X, c.y); assert.ok(agree(c.G.map((q) => nb.proba(q)), c.nb, 1e-6) === 1, "naive bayes");
+  const t = fitTree(c.X, c.y, { maxDepth: 3 }); assert.ok(agree(c.G.map((q) => treeProba(t, q)), c.tree, 1e-9) >= 0.97, "tree");
+  const gb = fitBoost(c.X, c.y, { rounds: 15, lr: 0.3, depth: 2 }); assert.ok(agree(c.G.map((q) => gb.proba(q)), c.gb, 1e-6) >= 0.97, "boosting");
+});
+test("SVM and forest behave: SMO agrees with libsvm on sign, forest beats chance", () => {
+  const c = F.cls, svm = fitSVM(c.X, c.y, { C: 1, gamma: 3 }), same = c.G.filter((q, i) => (svm.decision(q) > 0) === (c.svm_rbf[i] > 0)).length / c.G.length;
+  assert.ok(same >= 0.95, `svm sign agreement ${same}`);
+  assert.ok(Math.abs(svm.sv.length - c.svm_n) <= Math.max(6, 0.3 * c.svm_n), `support vectors ${svm.sv.length} vs ${c.svm_n}`);
+  const d = makeData("moons", 160, 0.1), f = fitForest(d.X, d.y, { trees: 25 }), acc = d.X.filter((q, i) => (f.proba(q) >= 0.5 ? 1 : 0) === d.y[i]).length / 160;
+  assert.ok(acc > 0.9, `forest training accuracy ${acc}`);
+});
