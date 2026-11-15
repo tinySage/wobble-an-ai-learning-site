@@ -1,0 +1,49 @@
+{
+  "slug": "activations",
+  "realLife": "Choosing an activation is among the first architecture decisions in any network, and ReLU or a close variant is the usual first try.",
+  "summary": "The bend between layers: pick one and the slope decides whether learning flows or stalls.",
+  "headline": "The bend decides how learning flows",
+  "overview": [
+    "Sigmoid and tanh squash values into a range. ReLU passes positives and zeroes negatives. Leaky ReLU lets a small amount through the negative side.",
+    "Backprop multiplies by the activation's slope at every layer. Where the slope is near zero, little learning signal gets through. A ReLU unit whose input is negative for every example has slope zero everywhere, so it can stop updating for good."
+  ],
+  "widget": "lab-activations",
+  "break": {
+    "label": "Break it",
+    "explains": "Train with plain SGD at learning rate 3. A big step pushes many ReLU units negative for every example, they stop updating, and the ReLU loss sticks near its starting value. Tanh still learns, and leaky ReLU keeps a small gradient alive."
+  },
+  "check": {
+    "question": "What is a dead ReLU unit?",
+    "options": [
+      "One whose output is zero for every training example, so its gradient is zero too",
+      "One with too many weights",
+      "One that outputs only ones"
+    ],
+    "answer": 0
+  },
+  "data": "One hundred concentric-ring points, centred to -1 to 1. A 2-8-8-1 network per activation, trained 200 passes with SGD, same seed. Dead units are counted only for ReLU, where the idea is exact.",
+  "maths": [
+    "$$\\sigma(z)=\\frac1{1+e^{-z}},\\quad\\sigma'(z)=\\sigma(z)\\big(1-\\sigma(z)\\big)\\le\\tfrac14$$",
+    "$$\\tanh'(z)=1-\\tanh^2(z)\\le 1,\\qquad \\operatorname{ReLU}'(z)=\\begin{cases}1&z>0\\\\0&z\\le0\\end{cases}$$",
+    "$$\\tanh(z)=2\\sigma(2z)-1$$",
+    "Guides disagree on sigmoid: one Stanford lecture tells you never to use it in hidden layers, while another course notes it is still the right output for a probability."
+  ],
+  "code": "import torch.nn as nn\nnn.Sequential(nn.Linear(2, 8), nn.ReLU(), nn.Linear(8, 8), nn.LeakyReLU(0.01), nn.Linear(8, 1))",
+  "sources": [
+    {
+      "title": "Stanford CS231n lecture 5: training neural nets",
+      "url": "https://cs231n.pages.dev/lectures/lecture05",
+      "note": "recommendation to use ReLU and be careful with learning rates"
+    },
+    {
+      "title": "Stanford CS224n lecture 3",
+      "url": "https://web.stanford.edu/class/cs224n/slides_w26/cs224n-2026-lecture03-neuralnets.pdf",
+      "note": "tanh is a rescaled sigmoid, ReLU has a dead zone, logistic still useful for probabilities"
+    },
+    {
+      "title": "aman.ai: CS231n training nets I",
+      "url": "https://aman.ai/cs231n/training-neural-nets-I/",
+      "note": "sigmoid saturation, tanh zero-centred, ReLU non-saturating"
+    }
+  ]
+}

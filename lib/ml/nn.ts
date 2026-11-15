@@ -74,6 +74,11 @@ export function gradCheck(n: Net, X: number[][], y: number[], o: { l2?: number; 
   }
   return worst;
 }
+export function lossOnly(n: Net, X: number[][], y: number[], l2 = 0): number {
+  let loss = 0; for (let s = 0; s < X.length; s++) { const p = Math.min(Math.max(forward(n, X[s]).p, 1e-12), 1 - 1e-12); loss += -(y[s] * Math.log(p) + (1 - y[s]) * Math.log(1 - p)); }
+  let reg = 0; if (l2) for (const w of n.W) for (const v of w) reg += 0.5 * l2 * v * v; return loss / X.length + reg;
+}
+export const centred = (X: number[][]) => X.map((p) => p.map((v) => 2 * v - 1));
 export function layerGradNorms(n: Net, X: number[][], y: number[]): number[] { const g = lossGrad(n, X, y); return g.W.map((w) => Math.sqrt(w.reduce((s, v) => s + v * v, 0))); }
 export function deadUnits(n: Net, X: number[][]): number { let dead = 0, tot = 0; const caches = X.map((x) => forward(n, x)); for (let l = 0; l < n.sizes.length - 2; l++) for (let j = 0; j < n.sizes[l + 1]; j++) { tot++; if (caches.every((c) => c.Z[l][j] <= 0)) dead++; } return tot ? dead / tot : 0; }
 
@@ -100,15 +105,16 @@ export function optimisePath(grad: (p: number[]) => number[], start: number[], m
   for (let i = 0; i < steps; i++) { opt.step(p, [Float64Array.from(grad(Array.from(p[0])))]); path.push(Array.from(p[0])); if (!p[0].every(Number.isFinite)) break; }
   return path;
 }
-export interface TrainCfg { epochs: number; lr: number; method?: Method; l2?: number; drop?: number; seed?: number; bug?: Bug; batch?: number; test?: { X: number[][]; y: number[] } }
+export interface TrainCfg { every?: number; epochs: number; lr: number; method?: Method; l2?: number; drop?: number; seed?: number; bug?: Bug; batch?: number; test?: { X: number[][]; y: number[] } }
 export function trainNet(n: Net, X: number[][], y: number[], c: TrainCfg) {
   const opt = new Opt(c.method ?? "adam", c.lr), r = rng((c.seed ?? 1) * 31 + 7), hist = { loss: [] as number[], acc: [] as number[], testLoss: [] as number[], testAcc: [] as number[] }, params = [...n.W, ...n.b];
   const idx = X.map((_, i) => i), bs = c.batch ?? X.length;
   for (let e = 0; e < c.epochs; e++) {
     for (let i = idx.length - 1; i > 0 && bs < X.length; i--) { const j = Math.floor(r() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
     for (let s = 0; s < X.length; s += bs) { const ii = idx.slice(s, s + bs), g = lossGrad(n, ii.map((i) => X[i]), ii.map((i) => y[i]), { l2: c.l2, drop: c.drop, rand: r, bug: c.bug }); opt.step(params, [...g.W, ...g.b]); }
-    hist.loss.push(lossGrad(n, X, y, { l2: c.l2 }).loss); hist.acc.push(netAccuracy(n, X, y));
-    if (c.test) { hist.testLoss.push(lossGrad(n, c.test.X, c.test.y).loss); hist.testAcc.push(netAccuracy(n, c.test.X, c.test.y)); }
+    if ((e + 1) % (c.every ?? 1) !== 0 && e !== c.epochs - 1) continue;
+    hist.loss.push(lossOnly(n, X, y, c.l2)); hist.acc.push(netAccuracy(n, X, y));
+    if (c.test) { hist.testLoss.push(lossOnly(n, c.test.X, c.test.y)); hist.testAcc.push(netAccuracy(n, c.test.X, c.test.y)); }
   }
   return hist;
 }

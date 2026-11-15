@@ -1,0 +1,48 @@
+{
+  "slug": "dropout",
+  "realLife": "Dropout is a standard regulariser in fully connected layers when data is limited.",
+  "summary": "Randomly switch off units while training so no unit can lean on another unit's mistakes.",
+  "headline": "Train with parts missing",
+  "overview": [
+    "At each training step dropout silences a random share of hidden units. The network cannot rely on any one unit being present, which discourages units from co-adapting to quirks of the training set.",
+    "At prediction time dropout is switched off. Modern implementations rescale during training so nothing needs changing at test time."
+  ],
+  "widget": "lab-dropout",
+  "break": {
+    "label": "Break it",
+    "explains": "Drop 90% of units at every step. The network is starved: its training loss stays high, and the picture shows it underfitting instead of memorising."
+  },
+  "check": {
+    "question": "What does dropout do at prediction time in most libraries?",
+    "options": [
+      "It is turned off",
+      "It drops a different half each time",
+      "It doubles the weights"
+    ],
+    "answer": 0
+  },
+  "data": "Sixty training points from noisy moons and 200 fresh points for testing, through a 2-16-16-1 ReLU network trained 300 passes. The gap between test and train loss is the overfitting signal. Results vary with the random start.",
+  "maths": [
+    "$$\\tilde h_j=\\frac{r_j}{1-q}\\,h_j,\\qquad r_j\\sim\\operatorname{Bernoulli}(1-q)$$",
+    "q is the share dropped. Dividing by 1 - q during training keeps the average activation unchanged, so inference uses the full network as is. This is called inverted dropout.",
+    "The original paper keeps units with probability p instead and scales weights at test time, so p = 0.5 there means 50% dropped. Combining dropout with batch normalisation can hurt, because dropout shifts activation variance between training and test."
+  ],
+  "code": "import torch.nn as nn\nnn.Sequential(nn.Linear(2, 16), nn.ReLU(), nn.Dropout(p=0.5), nn.Linear(16, 1))\nmodel.eval()   # turns dropout off for prediction",
+  "sources": [
+    {
+      "title": "Srivastava et al.: Dropout (JMLR 2014)",
+      "url": "https://jmlr.org/papers/v15/srivastava14a.html",
+      "note": "thinned networks and test-time scaling"
+    },
+    {
+      "title": "MetricGate: dropout regularisation",
+      "url": "https://metricgate.com/blogs/dropout-regularization-neural-networks/",
+      "note": "inverted dropout and batch-norm caution"
+    },
+    {
+      "title": "Li et al.: dropout and batch normalisation disharmony",
+      "url": "https://arxiv.org/pdf/1801.05134",
+      "note": "variance shift when switching from train to test"
+    }
+  ]
+}
