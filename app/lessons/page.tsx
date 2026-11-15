@@ -1,9 +1,9 @@
 import Chrome from "@/components/Chrome";
-import PartGrid from "@/components/PartGrid";
+import WorldMap from "@/components/WorldMap";
 import { Tracker } from "@/components/Progress";
-import { liveInOrder } from "@/lib/lessons";
+import { PARTS, liveInOrder } from "@/lib/lessons";
 
-export const metadata = { title: "Lessons · Wobble" };
+export const metadata = { title: "Map · Wobble" };
 export default function Lessons() {
-  return <Chrome current="lessons"><h1 style={{ fontSize: 64, margin: "24px 0 8px" }}>All lessons</h1><Tracker slugs={liveInOrder()} /><div style={{ height: 28 }} /><PartGrid /></Chrome>;
+  return <Chrome current="lessons"><div className="page-head"><span className="kicker">SELECT A LEVEL</span><h1>The map</h1><p className="lede">Six worlds, from a straight line to diffusion. Go in order or jump about. Nobody is checking.</p><Tracker slugs={liveInOrder()} /></div><WorldMap parts={PARTS} /></Chrome>;
 }

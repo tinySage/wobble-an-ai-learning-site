@@ -6,9 +6,7 @@ Learn machine learning by breaking it. Interactive lessons from linear regressio
 
 ![Wobble home](docs/screenshots/home.png)
 
-| Overfitting | Feature scaling | Leakage |
-|---|---|---|
-| ![](docs/screenshots/overfitting.png) | ![](docs/screenshots/feature-scaling.png) | ![](docs/screenshots/data-leakage.png) |
+![A level](docs/screenshots/lesson-page.png)
 
 ## What each lesson has
 A live model, a **break it** button, tabs for overview, data, maths, code and sources, a check question and a real-life note. Sources and the differences found between them are in `content/research/`.

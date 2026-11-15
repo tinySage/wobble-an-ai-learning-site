@@ -1,27 +1,36 @@
 import Link from "next/link";
 import Chrome from "@/components/Chrome";
-import HeroPlot from "@/components/HeroPlot";
-import PartGrid from "@/components/PartGrid";
-import { allPlanned } from "@/content/curriculum";
-import { firstLive, liveInOrder } from "@/lib/lessons";
+import HeroToy from "@/components/HeroToy";
+import WorldMap from "@/components/WorldMap";
+import { Tracker } from "@/components/Progress";
+import { PARTS, firstLive, liveInOrder } from "@/lib/lessons";
 
 export default function Home() {
+  const first = firstLive();
   return (
     <Chrome>
       <section className="hero" aria-label="Intro">
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          <span className="eyebrow" style={{ color: "var(--matcha)" }}>Machine learning, hands on</span>
-          <h1>Learn it by <em>breaking</em> it.</h1>
-          <p style={{ margin: 0, fontSize: 18, maxWidth: 480 }}>Short lessons from linear regression to transformers. Each one has a model you can drag, and a button that makes it fail. See why it fails, then fix it.</p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <Link href={`/lessons/${firstLive()}/`} className="btn primary">Start learning</Link>
-            <Link href="/lessons/" className="btn ghost">See all lessons</Link>
-          </div>
-          <div className="mono mute" style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 13 }}><span>{liveInOrder().length === allPlanned().length ? `${liveInOrder().length} lessons` : `${liveInOrder().length} lessons live, ${allPlanned().length} planned`}</span><span>No sign-up</span><span>Runs in your browser</span></div>
+        <div className="hero-copy">
+          <span className="kicker">46 LEVELS · 6 WORLDS · 0 SIGN-UPS</span>
+          <h1>Learn machine learning by <span className="hl">breaking</span> it.</h1>
+          <p className="lede">Every lesson is a tiny toy. Drag it until it works, then hit the red button and watch it fall apart. The falling apart is the lesson.</p>
+          <div className="cta"><Link href={`/lessons/${first}/`} className="px-btn primary">Press start ▸</Link><Link href="/lessons/" className="px-btn">Open the map</Link></div>
+          <ul className="perks"><li>runs in your browser</li><li>maths tested against scikit-learn</li><li>sources for every claim</li></ul>
         </div>
-        <HeroPlot />
+        <HeroToy first={first} />
       </section>
-      <PartGrid />
+
+      <section className="how" aria-label="How a level works">
+        <div className="how-step"><span className="how-n">01</span><b>Make it</b><p>Drag points, slide knobs, train a tiny model live.</p></div>
+        <div className="how-step break"><span className="how-n">02</span><b>Break it</b><p>One red button pushes it to fail on purpose.</p></div>
+        <div className="how-step"><span className="how-n">03</span><b>Get why</b><p>Read the maths, the code and where the textbooks disagree.</p></div>
+        <div className="how-step"><span className="how-n">04</span><b>Earn a star</b><p>Answer one question to clear the level.</p></div>
+      </section>
+
+      <section aria-labelledby="map-title" className="map-sec">
+        <div className="sec-head"><h2 id="map-title">The map</h2><Tracker slugs={liveInOrder()} /></div>
+        <WorldMap parts={PARTS} />
+      </section>
     </Chrome>
   );
 }

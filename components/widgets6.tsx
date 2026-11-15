@@ -5,7 +5,7 @@ import { Btn, Row, Slider, Stat } from "./widgets";
 import { Layout, Mini, Pick, S } from "./widgets4";
 
 const G = "#58792F", R = "#C4416B", AMBER = "#D9A441", BLUE = "#5B7DB1", INK = "#26301F";
-const BOX: React.CSSProperties = { width: "100%", height: "auto", background: "#fff", borderRadius: 14, border: "1px solid var(--line)" };
+const BOX: React.CSSProperties = { width: "100%", height: "auto", background: "var(--screen)", borderRadius: 0, border: "3px solid var(--ink)" };
 const pct = (v: number) => `${(v * 100).toFixed(0)}%`;
 
 /** Horizontal bars with labels. Positive values go right in green, negative left in rose. */

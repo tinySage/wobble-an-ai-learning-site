@@ -4,38 +4,54 @@ import WidgetRouter from "@/components/WidgetRouter";
 import LessonBody from "@/components/LessonBody";
 import { DoneMark } from "@/components/Progress";
 import Chrome from "@/components/Chrome";
+import { WorldIcon } from "@/components/WorldMap";
 import { PARTS, isLive, lessonMeta, liveSlugs, loadLesson } from "@/lib/lessons";
 
 export const dynamicParams = false;
 export const generateStaticParams = () => liveSlugs().map((slug) => ({ slug }));
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params, m = lessonMeta(slug), c = loadLesson(slug);
+  return { title: m ? `${m.part.id}-${m.index} ${m.title} · Wobble` : "Wobble", description: c?.summary };
+}
 
 export default async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const c = loadLesson(slug), m = lessonMeta(slug);
   if (!c || !m) notFound();
-  const part = m.part;
+  const part = m.part, nextPart = PARTS.find((p) => p.id === part.id + 1);
+  const next = m.next ?? nextPart?.lessons[0] ?? null;
   return (
     <Chrome current="lessons">
-      <div className="lesson">
-        <nav className="card side" aria-label={`Part ${part.id}: ${part.title}`}>
-          <span className="eyebrow mute" style={{ padding: "4px 10px 8px" }}>Part {part.id} · {part.title}</span>
+      <nav className="levelbar" aria-label={`World ${part.id}: ${part.title}`}>
+        <Link href="/lessons/" className="crumb">◂ MAP</Link>
+        <span className="lb-world"><WorldIcon id={part.id} size={22} /> WORLD {part.id}</span>
+        <ol>
           {part.lessons.map((l, i) => isLive(l.slug)
-            ? <Link key={l.slug} href={`/lessons/${l.slug}/`} aria-current={l.slug === slug ? "page" : undefined}><span>{l.title}</span><span className="mono" style={{ fontSize: 12 }}><DoneMark slug={l.slug} /> {i + 1}</span></Link>
-            : <span key={l.slug} className="off">{l.title} · soon</span>)}
-        </nav>
-        <article style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <header>
-            <span className="eyebrow mute">Lesson {m.index} of {m.total} · {m.verb}</span>
-            <h1 style={{ fontSize: "clamp(44px,6vw,64px)", marginTop: 6 }}>{m.title}</h1>
-          </header>
-          <div className="card" style={{ padding: 18 }}><WidgetRouter name={c.widget} /></div>
-          <LessonBody c={c} />
-          <nav aria-label="Previous and next lesson" style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-            {m.prev && isLive(m.prev.slug) ? <Link href={`/lessons/${m.prev.slug}/`} className="btn ghost">← {m.prev.title}</Link> : <span />}
-            {m.next && isLive(m.next.slug) ? <Link href={`/lessons/${m.next.slug}/`} className="btn primary">{m.next.title} →</Link> : <span />}
-          </nav>
-        </article>
-      </div>
+            ? <li key={l.slug}><Link href={`/lessons/${l.slug}/`} aria-current={l.slug === slug ? "page" : undefined} title={l.title} aria-label={`${part.id}-${i + 1} ${l.title}`}>{i + 1}<DoneMark slug={l.slug} /></Link></li>
+            : <li key={l.slug}><span>{i + 1}</span></li>)}
+        </ol>
+      </nav>
+
+      <header className="level-head">
+        <div className="lvl-badge" aria-hidden="true"><small>LEVEL</small>{part.id}-{m.index}</div>
+        <div>
+          <span className="kicker">{part.title} · {m.verb}</span>
+          <h1>{m.title}</h1>
+          <p className="lede">{c.summary}</p>
+        </div>
+      </header>
+
+      <section className="window play" aria-label="Playground">
+        <div className="win-bar"><span className="dots"><i /><i /><i /></span><span>PLAYGROUND</span><span className="win-hint">drag things · then press the red button</span></div>
+        <div className="win-body"><WidgetRouter name={c.widget} /></div>
+      </section>
+
+      <LessonBody c={c} />
+
+      <nav className="next-nav" aria-label="Previous and next level">
+        {m.prev && isLive(m.prev.slug) ? <Link href={`/lessons/${m.prev.slug}/`} className="px-btn">◂ {m.prev.title}</Link> : <Link href="/lessons/" className="px-btn">◂ Map</Link>}
+        {next && isLive(next.slug) ? <Link href={`/lessons/${next.slug}/`} className="px-btn primary">{m.next ? "Next" : `World ${part.id + 1}`}: {next.title} ▸</Link> : <Link href="/lessons/" className="px-btn primary">You finished the game ▸</Link>}
+      </nav>
     </Chrome>
   );
 }
