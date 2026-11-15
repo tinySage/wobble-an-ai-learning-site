@@ -102,5 +102,42 @@ out["unsup"] = dict(X=UX.tolist(), init=init.tolist(), km_inertia=float(km.inert
   agg={l: AgglomerativeClustering(3, linkage=l).fit(UX).labels_.tolist() for l in ["single","complete","average","ward"]},
   pca_X=Z5.tolist(), pca_values=pc.explained_variance_.tolist(), pca_ratio=pc.explained_variance_ratio_.tolist(), pca_abs=np.abs(pc.components_).tolist(),
   gmm=gms, tsne_X=HX.tolist(), tsne_P=Pj.tolist())
+
+from sklearn.linear_model import Perceptron
+from scipy.signal import correlate2d
+PX = rng.normal(size=(40,2)) * 0.5 + np.array([0.5,0.5]); py_ = ((PX[:,0] - .5) * (PX[:,1] - .5) > 0).astype(int)
+pp = Perceptron(max_iter=10, tol=None, shuffle=False, eta0=1.0, penalty=None, fit_intercept=True).fit(PX, py_)
+def np_mlp(sizes, act, Ws, bs, X, y, l2):
+    f = {"tanh": np.tanh, "relu": lambda z: np.maximum(z, 0)}[act]; d = {"tanh": lambda z: 1-np.tanh(z)**2, "relu": lambda z: (z>0)*1.0}[act]
+    A=[X]; Z=[]
+    for l in range(len(Ws)):
+        z = A[-1] @ Ws[l].T + bs[l]; Z.append(z); A.append(f(z) if l < len(Ws)-1 else 1/(1+np.exp(-z)))
+    p = A[-1][:,0]; N=len(y); loss = float(np.mean(-(y*np.log(p)+(1-y)*np.log(1-p))) + sum(0.5*l2*np.sum(W**2) for W in Ws))
+    dz = (p - y)[:,None]; gW=[None]*len(Ws); gb=[None]*len(Ws)
+    for l in range(len(Ws)-1, -1, -1):
+        gW[l] = dz.T @ A[l] / N + l2*Ws[l]; gb[l] = dz.sum(0)/N
+        if l > 0: dz = (dz @ Ws[l]) * d(Z[l-1])
+    return loss, gW, gb
+sizes=[2,5,4,1]; nn_fx={}
+NX = rng.normal(size=(30,2)); ny = (NX[:,0]*NX[:,1] > 0).astype(int)
+for act in ["tanh","relu"]:
+    Ws=[rng.normal(size=(sizes[i+1],sizes[i]))*0.6 for i in range(3)]; bs=[rng.normal(size=sizes[i+1])*0.1 for i in range(3)]
+    loss,gW,gb = np_mlp(sizes, act, Ws, bs, NX, ny, 0.01)
+    nn_fx[act]=dict(W=[w.ravel().tolist() for w in Ws], b=[b.tolist() for b in bs], loss=loss, gW=[g.ravel().tolist() for g in gW], gb=[g.tolist() for g in gb])
+cvec = np.array([1.0, 8.0, 3.0]); p0 = np.array([1.0, -1.0, 0.7]); opts={}
+def run(method, lr, steps=25):
+    p = p0.copy(); m = np.zeros(3); v = np.zeros(3)
+    for t in range(1, steps+1):
+        g = 2*cvec*p
+        if method=="sgd": p = p - lr*g
+        elif method=="momentum": m = 0.9*m + g; p = p - lr*m
+        elif method=="rmsprop": v = 0.99*v + 0.01*g*g; p = p - lr*g/(np.sqrt(v)+1e-8)
+        else:
+            m = 0.9*m + 0.1*g; v = 0.999*v + 0.001*g*g; p = p - lr*(m/(1-0.9**t))/(np.sqrt(v/(1-0.999**t))+1e-8)
+    return p.tolist()
+for mth, lr in [("sgd",0.05),("momentum",0.02),("rmsprop",0.05),("adam",0.1)]: opts[mth]=dict(lr=lr, final=run(mth, lr))
+cimg = rng.normal(size=(9,9)); ck = rng.normal(size=(3,3))
+conv_fx = dict(img=cimg.tolist(), k=ck.tolist(), out=correlate2d(np.pad(cimg,1), ck, mode="valid")[::2, ::2].tolist())
+out["nnfx"] = dict(perc=dict(X=PX.tolist(), y=py_.tolist(), w=pp.coef_[0].tolist(), b=float(pp.intercept_[0])), mlp=nn_fx, nx=NX.tolist(), ny=ny.tolist(), opt=opts, cvec=cvec.tolist(), p0=p0.tolist(), conv=conv_fx)
 json.dump(out, open("tests/fixtures/sklearn.json", "w"))
 print("ok", out["sklearn"])
